@@ -7,17 +7,17 @@
 
 class FanControl {
 public:
-  FanControl();
-  void begin();
-  void begin(int fanSpeedMarkerCustom);
-  void publishFanSpeed();
-  void receiveSerialData();
+	FanControl();
+	void begin();
+	void begin(int fanSpeedMarkerCustom);
+	void publishFanSpeed();
+	void receiveSerialData();
 
 private:
-  enum State { WAITING_FOR_DATA, RECEIVING_DATA } state;
-  int fanSpeed;
-  void processIncomingByte(byte incomingByte);
-  int fanSpeedMarker;
+	enum State { WAITING_FOR_DATA, RECEIVING_DATA } state;
+	int fanSpeed;
+	void processIncomingByte(byte incomingByte);
+	int fanSpeedMarker;
 };
 
 #endif

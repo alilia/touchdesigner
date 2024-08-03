@@ -4,4 +4,5 @@ def onValueChange(channel, sampleIndex, val, prev):
 	data.extend([int(val)])
 
 	op(parent().par.Globalserial).sendBytes(data)
+
 	return

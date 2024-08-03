@@ -3,11 +3,11 @@
 TachInput tach;
 
 void setup() {
-  Serial.begin(9600);
-  tach.begin();
+	Serial.begin(9600);
+	tach.begin();
 }
 
 void loop() {
-  tach.receiveSerialData();
-  tach.tachLoop();
+	tach.receiveSerialData();
+	tach.tachLoop();
 }
