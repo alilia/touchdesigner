@@ -2,7 +2,6 @@
 
 FanControl::FanControl() {
   state = WAITING_FOR_DATA;
-  fanSpeed = 0; // default fan speed
 }
 
 void FanControl::begin() {
@@ -23,7 +22,6 @@ void FanControl::publishFanSpeed() {
 void FanControl::receiveSerialData() {
   while (Serial.available() > 0) {
     byte incomingByte = Serial.read();
-    Serial.println(incomingByte);
     processIncomingByte(incomingByte);
   }
 }
