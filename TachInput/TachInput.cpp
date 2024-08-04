@@ -9,44 +9,27 @@ void TachInput::isrCountRPM() {
 	}
 }
 
-TachInput::TachInput() {
-	state = WAITING_FOR_DATA;
-	adjuster = 0.1; // how often to eval tach counter
-	baseSpeed = 22000; // rmp to chop
-	lastMillis = 0;
+TachInput::TachInput(int inputDataPinCustom, int inputMarkerCustom, int outputDataPinCustom, int outputMarkerCustom)
+	: TDComm(inputDataPinCustom, inputMarkerCustom, outputDataPinCustom, outputMarkerCustom),
+	  adjuster(0.1), baseSpeed(22000), lastMillis(0), RPMcounter(0) {
 }
 
 void TachInput::begin() {
-	begin(0xFE, 0xFC); // default RMP (output) marker and default base speed (input) marker
-}
-
-void TachInput::begin(int RPMMarkerCustom, int baseSpeedMarkerCustom) {
-	RPMMarker = RPMMarkerCustom;
-	baseSpeedMarker = baseSpeedMarkerCustom;
-
-	pinMode(TACH_PIN, INPUT_PULLUP);
-	pinMode(BASE_SPEED_PIN, OUTPUT);
-
+	TDComm::begin(); // Ensure base class initialization
 	instance = this;
-	attachInterrupt(digitalPinToInterrupt(TACH_PIN), TachInput::isrCountRPM, FALLING);
+	attachInterrupt(digitalPinToInterrupt(inputDataPin), TachInput::isrCountRPM, FALLING);
 
-	analogWrite(BASE_SPEED_PIN, 255);
+	outputPinData = 255;
+	writeDataToPin();
 }
 
 void TachInput::countRPM() {
 	RPMcounter++;
 }
 
-void TachInput::receiveSerialData() {
-	while (Serial.available() > 0) {
-		byte incomingByte = Serial.read();
-		processIncomingByte(incomingByte);
-	}
-}
-
-void TachInput::processIncomingByte(byte incomingByte) {
+void TachInput::receiveSerialData(byte incomingByte) {
 	if (state == WAITING_FOR_DATA) {
-		if (incomingByte == baseSpeedMarker) {
+		if (incomingByte == inputMarker) {
 			state = RECEIVING_DATA;
 		}
 	} else if (state == RECEIVING_DATA) {
@@ -55,22 +38,18 @@ void TachInput::processIncomingByte(byte incomingByte) {
 	}
 }
 
-void TachInput::publishRPM(int RPM) {
-	Serial.println(RPMMarker);
-	Serial.println(RPM);
-}
-
-void TachInput::tachLoop() {
+void TachInput::loop() {
 	if (millis() - lastMillis >= (1000 * adjuster)) {
-		detachInterrupt(digitalPinToInterrupt(TACH_PIN));
+		detachInterrupt(digitalPinToInterrupt(inputDataPin));
 		int RPM = (RPMcounter * (60 / 2)) / adjuster - baseSpeed;
 
 		if (RPM > 0) {
-			publishRPM(RPM);
+      outputSerialData = String(RPM);
+			writeDataToSerial();
 		}
 		RPMcounter = 0;
 
 		lastMillis = millis();
-		attachInterrupt(digitalPinToInterrupt(TACH_PIN), TachInput::isrCountRPM, FALLING);
+		attachInterrupt(digitalPinToInterrupt(inputDataPin), TachInput::isrCountRPM, FALLING);
 	}
 }

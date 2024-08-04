@@ -5,9 +5,11 @@
 
 class TDComm {
 public:
+	TDComm();
 	TDComm(int inputDataPinCustom, int inputMarkerCustom, int outputDataPinCustom, int outputMarkerCustom);
 	virtual void begin();
-	void loop();
+	virtual void receiveSerialData(byte incomingByte) = 0;
+	virtual void loop() = 0;
 
 protected:
 	int inputMarker;
@@ -16,11 +18,10 @@ protected:
 	int inputDataPin;
 	int outputDataPin;
 
-	char outputSerialData;
+	String outputSerialData;
 	int outputPinData;
 
 	enum State { WAITING_FOR_DATA, RECEIVING_DATA } state;
-	virtual void receiveSerialData(byte incomingByte);
 	virtual void writeDataToSerial();
 	virtual void writeDataToPin();
 };

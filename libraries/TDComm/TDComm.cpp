@@ -1,21 +1,23 @@
 #include "TDComm.h"
 
-void TDComm::TDComm(int inputDataPinCustom, int inputMarkerCustom, int outputDataPinCustom, int outputMarkerCustom) {
+TDComm::TDComm() { /* nothing to do here */ }
+
+TDComm::TDComm(int inputDataPinCustom, int inputMarkerCustom, int outputDataPinCustom, int outputMarkerCustom) {
 	/*
-		inptuDataPinCustom	-	-1 if n/a
-		inputMarkerCustom	-	will wait for that byte on serial, before proceeding to process the data
-		outptuDataPinCustom	-	-1 if n/a
-		outputMarkerCustom	-	will output this byte first before the actual data
+		inputDataPinCustom  -   -1 if n/a
+		inputMarkerCustom   -   will wait for that byte on serial, before proceeding to process the data
+		outputDataPinCustom -   -1 if n/a
+		outputMarkerCustom  -   will output this byte first before the actual data
 	*/
 
 	inputDataPin = inputDataPinCustom;
 	outputDataPin = outputDataPinCustom;
 
-	if (inputMarkerCustom) {
+	if (inputMarkerCustom > -1) {
 		inputMarker = inputMarkerCustom;
 	}
 
-	if (outputMarkerCustom) {
+	if (outputMarkerCustom > -1) {
 		outputMarker = outputMarkerCustom;
 	}
 
@@ -32,20 +34,17 @@ void TDComm::begin() {
 	}
 }
 
-void TDComm::loop() {
-	while (Serial.available() > 0) {
-		byte incomingByte = Serial.read();
-		receiveSerialData(incomingByte);
+void TDComm::writeDataToSerial() {
+	if (outputMarker > -1) {
+		Serial.println(outputMarker);
+		Serial.println(outputSerialData);
 	}
 }
 
-void TDComm::writeDataToSerial() {
-	Serial.println(outputMarker);
-	Serial.println(outputSerialData);
-}
-
 void TDComm::writeDataToPin() {
-	analogWrite(outptuDataPin, outputPinData);
+	if (outputDataPin > -1) {
+		analogWrite(outputDataPin, outputPinData);
+	}
 }
 
 /*

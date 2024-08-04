@@ -1,34 +1,25 @@
 #ifndef TACHINPUT_H
-#define TACHINOUT_H
+#define TACHINPUT_H
 
-#include <Arduino.h>
+#include <TDComm.h>
 
-#define TACH_PIN 2
-#define BASE_SPEED_PIN 9
-
-class TachInput {
+class TachInput : public TDComm {
 public:
-	TachInput();
-	void begin();
-	void begin(int RPMMarkerCustom, int baseSpeedMarkerCustom);
-	void receiveSerialData();
-	void tachLoop();
+	TachInput(int inputDataPinCustom, int inputMarkerCustom, int outputDataPinCustom, int outputMarkerCustom);
+	void begin() override;
+	void receiveSerialData(byte incomingByte) override;
 	void countRPM();
+	void loop();
 
 private:
 	// this pointer magic was done by chatgpt
 	static void isrCountRPM();   // Static member function for ISR
 	static TachInput* instance;  // Static instance pointer
 
-	void publishRPM(int RPM);
-	enum State { WAITING_FOR_DATA, RECEIVING_DATA } state;
 	int baseSpeed;
-	void processIncomingByte(byte incomingByte);
-	int RPMMarker;
-	int baseSpeedMarker;
 	volatile int RPMcounter;
-	unsigned long lastMillis;
 	float adjuster;
+	unsigned long lastMillis;
 };
 
-#endif  // TACHINPUT_H
+#endif // TACHINPUT_H

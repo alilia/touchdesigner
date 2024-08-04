@@ -1,6 +1,6 @@
 #include "TachInput.h"
 
-TachInput tach;
+TachInput tach(2, 0xFC, 9, 0xFE);
 
 void setup() {
 	Serial.begin(9600);
@@ -8,6 +8,11 @@ void setup() {
 }
 
 void loop() {
-	tach.receiveSerialData();
-	tach.tachLoop();
+	while (Serial.available() > 0) {
+		byte incomingByte = Serial.read();
+
+		tach.receiveSerialData(incomingByte);
+	}
+
+	tach.loop();
 }
