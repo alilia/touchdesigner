@@ -1,6 +1,6 @@
 #include "RGBLed.h"
 
-RGBLed matrix;
+RGBLed matrix(16, 16, -1, -1, 6, 0xFF);
 
 void setup() {
 	Serial.begin(115200);
@@ -11,5 +11,9 @@ void setup() {
 }
 
 void loop() {
-	matrix.receiveSerialData();
+	while (Serial.available() > 0) {
+		byte incomingByte = Serial.read();
+
+		matrix.receiveSerialData(incomingByte);
+	}
 }

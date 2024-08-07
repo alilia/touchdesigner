@@ -1,31 +1,30 @@
 #ifndef RGBLED_H
 #define RGBLED_H
 
+#include <TDComm.h>
 #include <FastLED.h>
 
-#define MATRIX_WIDTH 16
-#define MATRIX_HEIGHT 16
-#define NUM_LEDS (MATRIX_WIDTH * MATRIX_HEIGHT)
-#define DATA_PIN 6
-
-class RGBLed {
+class RGBLed : public TDComm {
 public:
-	RGBLed();
-	void begin();
-	void begin(int frameMarkerCustom);
+	RGBLed(int matrixWidthCustom, int matrixHeightCustom, int inputDataPinCustom, int inputMarkerCustom, int outputDataPinCustom, int outputMarkerCustom);
+	~RGBLed();
+	void begin() override;
+	void receiveSerialData(byte incomingByte) override;
+	void processIncomingByte(byte incomingByte);
+
 	void setPixel(int x, int y, CRGB color);
 	void setBrightness(uint8_t brightness);
 	void update();
-	void receiveSerialData();
+	void loop();
 
 private:
-	CRGB leds[NUM_LEDS];
-	enum State { WAITING_FOR_DATA, RECEIVING_DATA } state;
+	int matrixWidth;
+	int matrixHeight;
+	int numLeds;
+	CRGB* leds; // pointer magic provided by chatgpt
+	byte* buffer; // pointer magic provided by chatgpt
 	int currentRow;
 	int bytesReceived;
-	byte buffer[3];
-	void processIncomingByte(byte incomingByte);
-	int frameMarker;
 };
 
-#endif
+#endif // RGBLED_H
