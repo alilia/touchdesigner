@@ -11,8 +11,11 @@ void TachInput::isrCountRPM() {
 
 TachInput::TachInput(int inputDataPinCustom, int inputMarkerCustom, int outputDataPinCustom, int outputMarkerCustom)
 	: TDComm(inputDataPinCustom, inputMarkerCustom, outputDataPinCustom, outputMarkerCustom),
-	  adjuster(0.1), baseSpeed(22000), lastMillis(0), RPMcounter(0) {
-}
+		adjuster(0.1),
+		baseSpeed(22000),
+		lastMillis(0),
+		RPMcounter(0)
+	{}
 
 void TachInput::begin() {
 	TDComm::begin(); // Ensure base class initialization
