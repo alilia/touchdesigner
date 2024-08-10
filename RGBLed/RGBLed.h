@@ -22,7 +22,7 @@
 
 class RGBLed : public TDComm {
 public:
-	RGBLed(int matrixWidthCustom, int matrixHeightCustom, int inputDataPinCustom, int inputMarkerCustom, int outputDataPinCustom, int outputMarkerCustom);
+	RGBLed(int matrixWidthCustom, int matrixHeightCustom, int inputMarkerCustom, int outputDataPinCustom);
 	~RGBLed();
 	void begin() override;
 	void receiveSerialData(byte incomingByte) override;

@@ -1,7 +1,7 @@
 #include "RGBLed.h"
 
-RGBLed::RGBLed(int matrixWidthCustom, int matrixHeightCustom, int inputDataPinCustom, int inputMarkerCustom, int outputDataPinCustom, int outputMarkerCustom)
-	: TDComm(inputDataPinCustom, inputMarkerCustom, outputDataPinCustom, outputMarkerCustom),
+RGBLed::RGBLed(int matrixWidthCustom, int matrixHeightCustom, int inputMarkerCustom, int outputDataPinCustom)
+	: TDComm(-1, inputMarkerCustom, outputDataPinCustom, -1),
 		matrixWidth(matrixWidthCustom),
 		matrixHeight(matrixHeightCustom),
 		numLeds( matrixWidth * matrixHeight ),
