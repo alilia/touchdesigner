@@ -1,7 +1,5 @@
 #include "RGBLed.h"
 
-#define DATA_PIN 6
-
 RGBLed::RGBLed(int matrixWidthCustom, int matrixHeightCustom, int inputDataPinCustom, int inputMarkerCustom, int outputDataPinCustom, int outputMarkerCustom)
 	: TDComm(inputDataPinCustom, inputMarkerCustom, outputDataPinCustom, outputMarkerCustom),
 		matrixWidth(matrixWidthCustom),
@@ -22,9 +20,26 @@ RGBLed::~RGBLed() {
 
 void RGBLed::begin() {
 	randomSeed(analogRead(0));
-	FastLED.addLeds<WS2812B, DATA_PIN, GRB>(leds, numLeds); // DATA_PIN is a defined constant
+
+	if (outputDataPin == 0) { FastLED.addLeds<WS2812B, DATA_PIN_00, GRB>(leds, numLeds); }
+	else if (outputDataPin == 1) { FastLED.addLeds<WS2812B, DATA_PIN_01, GRB>(leds, numLeds); }
+	else if (outputDataPin == 2) { FastLED.addLeds<WS2812B, DATA_PIN_02, GRB>(leds, numLeds); }
+	else if (outputDataPin == 3) { FastLED.addLeds<WS2812B, DATA_PIN_03, GRB>(leds, numLeds); }
+	else if (outputDataPin == 4) { FastLED.addLeds<WS2812B, DATA_PIN_04, GRB>(leds, numLeds); }
+	else if (outputDataPin == 5) { FastLED.addLeds<WS2812B, DATA_PIN_05, GRB>(leds, numLeds); }
+	else if (outputDataPin == 6) { FastLED.addLeds<WS2812B, DATA_PIN_06, GRB>(leds, numLeds); }
+	else if (outputDataPin == 7) { FastLED.addLeds<WS2812B, DATA_PIN_07, GRB>(leds, numLeds); }
+	else if (outputDataPin == 8) { FastLED.addLeds<WS2812B, DATA_PIN_08, GRB>(leds, numLeds); }
+	else if (outputDataPin == 9) { FastLED.addLeds<WS2812B, DATA_PIN_09, GRB>(leds, numLeds); }
+	else if (outputDataPin == 10) { FastLED.addLeds<WS2812B, DATA_PIN_10, GRB>(leds, numLeds); }
+	else if (outputDataPin == 11) { FastLED.addLeds<WS2812B, DATA_PIN_11, GRB>(leds, numLeds); }
+	else if (outputDataPin == 12) { FastLED.addLeds<WS2812B, DATA_PIN_12, GRB>(leds, numLeds); }
+	else if (outputDataPin == 13) { FastLED.addLeds<WS2812B, DATA_PIN_13, GRB>(leds, numLeds); }
+
 	FastLED.setBrightness(255);
+
 	fill_solid(leds, numLeds, CRGB(random(256), random(256), random(256)));
+
 	update();
 }
 
