@@ -7,19 +7,19 @@ class TDComm {
 public:
 	TDComm();
 	TDComm(int inputDataPinCustom, int inputMarkerCustom, int outputDataPinCustom, int outputMarkerCustom);
-	virtual void begin();
-	virtual void receiveSerialData(byte incomingByte) = 0;
-	virtual void loop() = 0;
+	virtual void begin(); // method triggered in Arduino's setup()
+	virtual void receiveSerialData(byte incomingByte) = 0; // method for processing serial data (usually in processIncomingByte())
+	virtual void loop(); // method for processing input data pin
 
 protected:
-	int inputMarker;
-	int outputMarker;
+	int inputMarker; // will look for this byte to start porcessing serial data
+	int outputMarker; // will output this byte before outputting data on serial
 
-	int inputDataPin;
-	int outputDataPin;
+	int inputDataPin; // will look for incoming signal on this Arduino pin
+	int outputDataPin; // will output signal on this Arduino pin
 
-	String outputSerialData;
-	int outputPinData;
+	String outputSerialData; // will output this to serial
+	int outputPinData; // will output this signal on pin
 
 	enum State { WAITING_FOR_DATA, RECEIVING_DATA } state;
 	virtual void writeDataToSerial();

@@ -42,10 +42,12 @@ void TDComm::writeDataToSerial() {
 }
 
 void TDComm::writeDataToPin() {
-	if (outputDataPin > -1) {
+	if (outputDataPin > -1 && outputPinData >= 0 && outputPinData < 256) {
 		analogWrite(outputDataPin, outputPinData);
 	}
 }
+
+void TDComm::loop() {}
 
 /*
 void TDComm::receiveSerialData(byte incomingByte) {

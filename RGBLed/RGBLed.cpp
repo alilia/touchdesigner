@@ -87,5 +87,3 @@ void RGBLed::processIncomingByte(byte incomingByte) {
 		}
 	}
 }
-
-void RGBLed::loop() {}

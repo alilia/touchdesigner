@@ -31,7 +31,6 @@ public:
 	void setPixel(int x, int y, CRGB color);
 	void setBrightness(uint8_t brightness);
 	void update();
-	void loop();
 
 private:
 	int matrixWidth;

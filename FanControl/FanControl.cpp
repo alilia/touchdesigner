@@ -22,5 +22,3 @@ void FanControl::receiveSerialData(byte incomingByte) {
 		state = WAITING_FOR_DATA;
 	}
 }
-
-void FanControl::loop() {}
