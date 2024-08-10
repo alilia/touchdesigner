@@ -52,7 +52,6 @@ void RGBLed::receiveSerialData(byte incomingByte) {
 }
 
 void RGBLed::processIncomingByte(byte incomingByte) {
-  // Serial.println(incomingByte);
 	buffer[bytesReceived++] = incomingByte;
 
 	if (bytesReceived == matrixWidth * 3) {
