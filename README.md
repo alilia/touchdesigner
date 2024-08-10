@@ -8,7 +8,11 @@ Feedback is appreciated either here, or via Instagram DM: [@ilia.feelin.good](ht
 
 ## RGBLed
 
-Goal of this implementation is to be able to stream TOP to an RGB LED Panel via Serial. [My panel](https://www.aliexpress.com/item/1005003901833984.html?spm=a2g0o.order_list.order_list_main.11.4db81802bIbykX) is a 16x16, WS2812B-powered snake-shaped strip. Implementation is based on [FastLED](https://github.com/FastLED/FastLED).
+Goal of this implementation is to be able to stream TOP to an RGB LED Panel via Serial. My RGB LEDs are:
+* [16x16 panel](https://www.aliexpress.com/item/1005003901833984.html?spm=a2g0o.order_list.order_list_main.11.4db81802bIbykX): WS2812B-powered, 5V snake-shaped strip
+* [10(x3) strip](https://leddiszkont.hu/led-szalag-led-szalag-magic-1.-magyarorszagon-a-legolcsobb/LLSZ505048L2EVRGBMAG/adatlap.html): SM16703-powered, 12V strip with 3 RGB LEDs / chip (note, that this chip is GRB)
+
+Implementation is based on [FastLED](https://github.com/FastLED/FastLED).
 
 ## FanControl
 
