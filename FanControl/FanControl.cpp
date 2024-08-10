@@ -1,39 +1,26 @@
 #include "FanControl.h"
 
-FanControl::FanControl() {
-	state = WAITING_FOR_DATA;
-}
+FanControl::FanControl(int inputMarkerCustom, int outputDataPinCustom)
+	: TDComm(-1, inputMarkerCustom, outputDataPinCustom, -1)
+	{}
 
 void FanControl::begin() {
-	begin(0xFD); // default frame marker
+	TDComm::begin();
+
+	outputPinData = 0;
+	writeDataToPin();
 }
 
-void FanControl::begin(int fanSpeedMarkerCustom) {
-	pinMode(DATA_PIN, OUTPUT);
-	fanSpeedMarker = fanSpeedMarkerCustom;
-	fanSpeed = 0;
-	publishFanSpeed();
-}
-
-void FanControl::publishFanSpeed() {
-	analogWrite(DATA_PIN, fanSpeed);
-}
-
-void FanControl::receiveSerialData() {
-	while (Serial.available() > 0) {
-		byte incomingByte = Serial.read();
-		processIncomingByte(incomingByte);
-	}
-}
-
-void FanControl::processIncomingByte(byte incomingByte) {
+void FanControl::receiveSerialData(byte incomingByte) {
 	if (state == WAITING_FOR_DATA) {
-		if (incomingByte == fanSpeedMarker) {
+		if (incomingByte == inputMarker) {
 			state = RECEIVING_DATA;
 		}
 	} else if (state == RECEIVING_DATA) {
-		fanSpeed = incomingByte;
-		publishFanSpeed();
+		outputPinData = incomingByte;
+		writeDataToPin();
 		state = WAITING_FOR_DATA;
 	}
 }
+
+void FanControl::loop() {}

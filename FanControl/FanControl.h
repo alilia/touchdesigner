@@ -1,23 +1,14 @@
 #ifndef FANCONTROL_H
 #define FANCONTROL_H
 
-#include <Arduino.h>
+#include <TDComm.h>
 
-#define DATA_PIN 9
-
-class FanControl {
+class FanControl : public TDComm {
 public:
-	FanControl();
-	void begin();
-	void begin(int fanSpeedMarkerCustom);
-	void publishFanSpeed();
-	void receiveSerialData();
-
-private:
-	enum State { WAITING_FOR_DATA, RECEIVING_DATA } state;
-	int fanSpeed;
-	void processIncomingByte(byte incomingByte);
-	int fanSpeedMarker;
+	FanControl(int inputMarkerCustom, int outputDataPinCustom);
+	void begin() override;
+	void receiveSerialData(byte incomingByte) override;
+	void loop();
 };
 
-#endif
+#endif // FANCONTROL_H
