@@ -47,7 +47,7 @@ void TachInput::loop() {
 		int RPM = (RPMcounter * (60 / 2)) / adjuster - baseSpeed;
 
 		if (RPM > 0) {
-      outputSerialData = String(RPM);
+			outputSerialData = String(RPM);
 			writeDataToSerial();
 		}
 		RPMcounter = 0;
