@@ -2,16 +2,19 @@
 
 TDComm::TDComm() { /* nothing to do here */ }
 
-TDComm::TDComm(int inputDataPinCustom, int inputMarkerCustom, int outputDataPinCustom, int outputMarkerCustom) {
+TDComm::TDComm(int inputDataPinCustom, int inputMarkerCustom, int outputDataPinCustom, int outputMarkerCustom, int timeoutMiliSecCustom)
+	: inputDataPin(inputDataPinCustom),
+	outputDataPin(outputDataPinCustom),
+	lastMiliSec(-1),
+	timeoutMiliSec(timeoutMiliSecCustom),
+	state(WAITING_FOR_DATA)
+	{
 	/*
 		inputDataPinCustom  -   -1 if n/a
 		inputMarkerCustom   -   will wait for that byte on serial, before proceeding to process the data
 		outputDataPinCustom -   -1 if n/a
 		outputMarkerCustom  -   will output this byte first before the actual data
 	*/
-
-	inputDataPin = inputDataPinCustom;
-	outputDataPin = outputDataPinCustom;
 
 	if (inputMarkerCustom > -1) {
 		inputMarker = inputMarkerCustom;
@@ -20,8 +23,6 @@ TDComm::TDComm(int inputDataPinCustom, int inputMarkerCustom, int outputDataPinC
 	if (outputMarkerCustom > -1) {
 		outputMarker = outputMarkerCustom;
 	}
-
-	state = WAITING_FOR_DATA;
 }
 
 void TDComm::begin() {
@@ -47,10 +48,19 @@ void TDComm::writeDataToPin() {
 	}
 }
 
+void TDComm::checkStateTimeout() {
+	if (millis() - lastMiliSec > timeoutMiliSec) {
+		state = WAITING_FOR_DATA;
+		lastMiliSec = -1;
+	}
+}
+
 void TDComm::loop() {}
 
 /*
 void TDComm::receiveSerialData(byte incomingByte) {
+	checkStateTimeout();
+
 	if (state == WAITING_FOR_DATA) {
 		if (incomingByte == inputMarker) {
 			state = RECEIVING_DATA;

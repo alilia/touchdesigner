@@ -10,7 +10,7 @@ void TachInput::isrCountRPM() {
 }
 
 TachInput::TachInput(int inputDataPinCustom, int inputMarkerCustom, int outputDataPinCustom, int outputMarkerCustom)
-	: TDComm(inputDataPinCustom, inputMarkerCustom, outputDataPinCustom, outputMarkerCustom),
+	: TDComm(inputDataPinCustom, inputMarkerCustom, outputDataPinCustom, outputMarkerCustom, 1000),
 		adjuster(0.1),
 		baseSpeed(22000),
 		lastMillis(0),
@@ -31,6 +31,8 @@ void TachInput::countRPM() {
 }
 
 void TachInput::receiveSerialData(byte incomingByte) {
+	checkStateTimeout();
+
 	if (state == WAITING_FOR_DATA) {
 		if (incomingByte == inputMarker) {
 			state = RECEIVING_DATA;

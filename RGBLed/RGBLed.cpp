@@ -1,7 +1,7 @@
 #include "RGBLed.h"
 
 RGBLed::RGBLed(int matrixWidthCustom, int matrixHeightCustom, int inputMarkerCustom, int outputDataPinCustom)
-	: TDComm(-1, inputMarkerCustom, outputDataPinCustom, -1),
+	: TDComm(-1, inputMarkerCustom, outputDataPinCustom, -1, 1000),
 		matrixWidth(matrixWidthCustom),
 		matrixHeight(matrixHeightCustom),
 		numLeds( matrixWidth * matrixHeight ),
@@ -55,6 +55,8 @@ void RGBLed::update() {
 }
 
 void RGBLed::receiveSerialData(byte incomingByte) {
+	checkStateTimeout();
+
 	if (state == WAITING_FOR_DATA) {
 		if (incomingByte == inputMarker) {
 			state = RECEIVING_DATA;
