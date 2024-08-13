@@ -23,5 +23,3 @@ jobs:
             ./FanControl
             ./TachInput
             ./libraries/TDComm
-          libraries: |
-            ./libraries/TDComm
