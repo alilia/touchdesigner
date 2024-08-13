@@ -23,5 +23,5 @@ jobs:
             ./FanControl
             ./TachInput
           libraries: |
-            - source-path: ~/libraries/TDComm
-            - name: FastLED
+            - source-path: './libraries/TDComm'
+            - source 
