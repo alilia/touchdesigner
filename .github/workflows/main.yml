@@ -22,5 +22,7 @@ jobs:
           sketch-paths: |
             ./FanControl
             ./TachInput
+            ./RGBLed
           libraries: |
             - source-path: './libraries/TDComm'
+            - name: 'FastLED'
