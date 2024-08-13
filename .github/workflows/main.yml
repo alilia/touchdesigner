@@ -16,23 +16,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Install Arduino CLI
-        uses: arduino/setup-arduino-cli@v1.0.0
-        with:
-          version: '0.20.2' # Specify the version of Arduino CLI to use
-
-      - name: Install libraries
-        run: |
-          arduino-cli lib install "FastLED"
-
       - name: Compile Arduino sketch
         uses: arduino/compile-sketches@v1.1.2
         with:
           sketch-paths: |
             ./FanControl
-            ./RGBLed
             ./TachInput
             ./libraries/TDComm
           libraries: |
             ./libraries/TDComm
-            FastLED
