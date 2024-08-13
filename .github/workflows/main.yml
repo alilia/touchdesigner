@@ -22,4 +22,3 @@ jobs:
           sketch-paths: |
             ./FanControl
             ./TachInput
-            ./libraries/TDComm
