@@ -23,5 +23,5 @@ jobs:
             ./FanControl
             ./TachInput
           libraries: |
-            - source-path: './libraries/TDComm'
-            - source 
+            - name: TDComm
+            source-path: './libraries/TDComm'
