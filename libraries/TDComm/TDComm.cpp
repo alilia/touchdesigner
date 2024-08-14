@@ -79,7 +79,7 @@ void TDComm::receiveSerialData(byte incomingByte) {
 		// put your processing here
 		//
 
-		resetState()
+		resetState();
 	}
 }
 */
