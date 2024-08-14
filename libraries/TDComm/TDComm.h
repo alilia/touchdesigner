@@ -25,6 +25,8 @@ protected:
 	unsigned long lastMiliSec;
 
 	enum State { WAITING_FOR_DATA, RECEIVING_DATA } state;
+	void resetState();
+
 	virtual void writeDataToSerial();
 	virtual void writeDataToPin();
 

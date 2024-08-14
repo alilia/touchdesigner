@@ -5,9 +5,7 @@ TDComm::TDComm() { /* nothing to do here */ }
 TDComm::TDComm(int inputDataPinCustom, int inputMarkerCustom, int outputDataPinCustom, int outputMarkerCustom, int timeoutMiliSecCustom)
 	: inputDataPin(inputDataPinCustom),
 	outputDataPin(outputDataPinCustom),
-	lastMiliSec(-1),
-	timeoutMiliSec(timeoutMiliSecCustom),
-	state(WAITING_FOR_DATA)
+	timeoutMiliSec(timeoutMiliSecCustom)
 	{
 	/*
 		inputDataPinCustom  -   -1 if n/a
@@ -23,6 +21,8 @@ TDComm::TDComm(int inputDataPinCustom, int inputMarkerCustom, int outputDataPinC
 	if (outputMarkerCustom > -1) {
 		outputMarker = outputMarkerCustom;
 	}
+
+	resetState();
 }
 
 void TDComm::begin() {
@@ -49,10 +49,17 @@ void TDComm::writeDataToPin() {
 }
 
 void TDComm::checkStateTimeout() {
-	if (millis() - lastMiliSec > timeoutMiliSec) {
-		state = WAITING_FOR_DATA;
-		lastMiliSec = -1;
+
+	if (state != WAITING_FOR_DATA) {
+		if (millis() - lastMiliSec > timeoutMiliSec) {
+			resetState();
+		}
 	}
+}
+
+void TDComm::resetState() {
+	state = WAITING_FOR_DATA;
+	lastMiliSec = -1;
 }
 
 void TDComm::loop() {}
@@ -64,6 +71,7 @@ void TDComm::receiveSerialData(byte incomingByte) {
 	if (state == WAITING_FOR_DATA) {
 		if (incomingByte == inputMarker) {
 			state = RECEIVING_DATA;
+			lastMiliSec = millis();
 		}
 	} else if (state == RECEIVING_DATA) {
 
@@ -71,7 +79,7 @@ void TDComm::receiveSerialData(byte incomingByte) {
 		// put your processing here
 		//
 
-		state = WAITING_FOR_DATA;
+		resetState()
 	}
 }
 */

@@ -62,6 +62,7 @@ void RGBLed::receiveSerialData(byte incomingByte) {
 			state = RECEIVING_DATA;
 			currentRow = 0;
 			bytesReceived = 0;
+			lastMiliSec = millis();
 		}
 	} else if (state == RECEIVING_DATA) {
 		processIncomingByte(incomingByte);
@@ -85,7 +86,7 @@ void RGBLed::processIncomingByte(byte incomingByte) {
 
 		if (currentRow == matrixHeight) {
 			update();
-			state = WAITING_FOR_DATA;
+			resetState();
 		}
 	}
 }
