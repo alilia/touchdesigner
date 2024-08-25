@@ -38,7 +38,7 @@ void RGBLed::begin() {
 
 	FastLED.setBrightness(255);
 
-	fill_solid(leds, numLeds, CRGB(random(256), random(256), random(256)));
+	fill_solid(leds, numLeds, CRGB(random(32), random(32), random(32)));
 
 	update();
 }
