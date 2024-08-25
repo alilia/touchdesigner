@@ -10,7 +10,7 @@ RGBLed::RGBLed(int matrixWidthCustom, int matrixHeightCustom, int inputMarkerCus
 	{
 		numLeds = matrixWidth * matrixHeight;
 		leds = new CRGB[numLeds];
-		buffer = new byte[matrixWidth * 3];
+		buffer = new byte[numLeds * 3];
 	}
 
 RGBLed::~RGBLed() {
@@ -72,25 +72,23 @@ void RGBLed::receiveSerialData(byte incomingByte) {
 void RGBLed::processIncomingByte(byte incomingByte) {
 	buffer[bytesReceived++] = incomingByte;
 
-	int expectingBytes = matrixWidth * 3;
+	int expectingBytes = numLeds * 3;
 
 	if (bytesReceived == expectingBytes) {
-		for (int col = 0; col < matrixWidth; col++) {
-			int idx = col * 3;
-			int r = buffer[idx];
-			int g = buffer[idx + 1];
-			int b = buffer[idx + 2];
+		for (int row = 0; row < matrixHeight; row++) {
+			for (int col = 0; col < matrixWidth; col++) {
+				int idx = ( row * matrixWidth + col ) * 3;
+				int r = buffer[idx];
+				int g = buffer[idx + 1];
+				int b = buffer[idx + 2];
 
-			setPixel(col, currentRow, CRGB(r, g, b));
+				setPixel(col, row, CRGB(r, g, b));
+			}
 		}
 
 		bytesReceived = 0;
-		currentRow++;
-
-		if (currentRow == matrixHeight) {
-			update();
-			resetState();
-		}
+		update();
+		resetState();
 	}
 }
 
