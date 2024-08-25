@@ -33,6 +33,8 @@ public:
 	void update();
 
 private:
+	void unpack_6bit_values(byte* buffer, int* values, int length);
+
 	int matrixWidth;
 	int matrixHeight;
 	int numLeds;

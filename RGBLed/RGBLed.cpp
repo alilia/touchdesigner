@@ -90,3 +90,12 @@ void RGBLed::processIncomingByte(byte incomingByte) {
 		}
 	}
 }
+
+void RGBLed::unpack_6bit_values(byte* buffer, int* values, int length) {
+	for (int i = 0; i < length / 3; i++) {
+		values[4 * i] = buffer[3 * i] >> 2;
+		values[4 * i + 1] = ((buffer[3 * i] & 0x3) << 4) | (buffer[3 * i + 1] >> 4);
+		values[4 * i + 2] = ((buffer[3 * i + 1] & 0xF) << 2) | (buffer[3 * i + 2] >> 6);
+		values[4 * i + 3] = buffer[3 * i + 2] & 0x3F;
+	}
+}
