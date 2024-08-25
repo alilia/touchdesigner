@@ -8,10 +8,7 @@ def send_frame_data(frame_data):
 	data = bytearray()
 
 	data.append(int('0x' + parent().par.Framemarker, 16))
-
-	for row in range(panel_rows):
-		row_data = frame_data[row * (panel_cols * 3) : (row + 1) * (panel_cols * 3)]
-		data.extend(row_data)
+	data.extend(frame_data)
 
 	op(parent().par.Globalserial).sendBytes(data)
 
