@@ -72,15 +72,18 @@ void RGBLed::receiveSerialData(byte incomingByte) {
 void RGBLed::processIncomingByte(byte incomingByte) {
 	buffer[bytesReceived++] = incomingByte;
 
-	int expectingBytes = numLeds * 3;
+	int expectingBytes = numLeds * 3 * 6 / 8; // since python is packing 4x6-bit values to 3x8-bits
 
 	if (bytesReceived == expectingBytes) {
+		int unpackedValues[numLeds * 3];
+		unpack_6bit_values(buffer, unpackedValues, bytesReceived);
+
 		for (int row = 0; row < matrixHeight; row++) {
 			for (int col = 0; col < matrixWidth; col++) {
 				int idx = ( row * matrixWidth + col ) * 3;
-				int r = buffer[idx];
-				int g = buffer[idx + 1];
-				int b = buffer[idx + 2];
+				int r = unpackedValues[idx] * 255 / 63;
+				int g = unpackedValues[idx + 1] * 255 / 63;
+				int b = unpackedValues[idx + 2] * 255 / 63;
 
 				setPixel(col, row, CRGB(r, g, b));
 			}
