@@ -72,11 +72,14 @@ void RGBLed::receiveSerialData(byte incomingByte) {
 void RGBLed::processIncomingByte(byte incomingByte) {
 	buffer[bytesReceived++] = incomingByte;
 
-	if (bytesReceived == matrixWidth * 3) {
+	int expectingBytes = matrixWidth * 3;
+
+	if (bytesReceived == expectingBytes) {
 		for (int col = 0; col < matrixWidth; col++) {
-			int r = buffer[col * 3];
-			int g = buffer[col * 3 + 1];
-			int b = buffer[col * 3 + 2];
+			int idx = col * 3;
+			int r = buffer[idx];
+			int g = buffer[idx + 1];
+			int b = buffer[idx + 2];
 
 			setPixel(col, currentRow, CRGB(r, g, b));
 		}
