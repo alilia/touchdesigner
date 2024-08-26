@@ -22,7 +22,7 @@
 
 class RGBLed : public TDComm {
 public:
-	RGBLed(int matrixWidthCustom, int matrixHeightCustom, int inputMarkerCustom, int outputDataPinCustom);
+	RGBLed(int matrixWidthCustom, int matrixHeightCustom, int rgbResolution, int inputMarkerCustom, int outputDataPinCustom);
 	~RGBLed();
 	void begin() override;
 	void receiveSerialData(byte incomingByte) override;
@@ -33,11 +33,16 @@ public:
 	void update();
 
 private:
+	void unpack_values(byte* buffer, int* values, int length, int bitsPerValue);
+
 	int matrixWidth;
 	int matrixHeight;
 	int numLeds;
 	CRGB* leds; // pointer magic provided by chatgpt
 	byte* buffer; // pointer magic provided by chatgpt
+
+	int rgbResolution;
+
 	int currentRow;
 	int bytesReceived;
 };
