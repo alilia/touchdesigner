@@ -1,10 +1,11 @@
 #include "RGBLed.h"
 
-RGBLed::RGBLed(int matrixWidthCustom, int matrixHeightCustom, int inputMarkerCustom, int outputDataPinCustom)
+RGBLed::RGBLed(int matrixWidthCustom, int matrixHeightCustom, int rgbResolution, int inputMarkerCustom, int outputDataPinCustom)
 	: TDComm(-1, inputMarkerCustom, outputDataPinCustom, -1, 1000),
 		matrixWidth(matrixWidthCustom),
 		matrixHeight(matrixHeightCustom),
 		numLeds( matrixWidth * matrixHeight ),
+		rgbResolution(rgbResolution),
 		bytesReceived(0),
 		currentRow(0)
 	{
@@ -72,18 +73,20 @@ void RGBLed::receiveSerialData(byte incomingByte) {
 void RGBLed::processIncomingByte(byte incomingByte) {
 	buffer[bytesReceived++] = incomingByte;
 
-	int expectingBytes = numLeds * 3 * 6 / 8; // since python is packing 4x6-bit values to 3x8-bits
+	int expectingBytes = numLeds * 3 * rgbResolution / 8; // since python is packing 4x6-bit values to 3x8-bits
 
 	if (bytesReceived == expectingBytes) {
 		int unpackedValues[numLeds * 3];
-		unpack_6bit_values(buffer, unpackedValues, bytesReceived);
+		unpack_values(buffer, unpackedValues, bytesReceived, rgbResolution);
 
 		for (int row = 0; row < matrixHeight; row++) {
 			for (int col = 0; col < matrixWidth; col++) {
+				int max_value = (1 << rgbResolution) - 1;
+
 				int idx = ( row * matrixWidth + col ) * 3;
-				int r = unpackedValues[idx] * 255 / 63;
-				int g = unpackedValues[idx + 1] * 255 / 63;
-				int b = unpackedValues[idx + 2] * 255 / 63;
+				int r = unpackedValues[idx] * 255 / max_value;
+				int g = unpackedValues[idx + 1] * 255 / max_value;
+				int b = unpackedValues[idx + 2] * 255 / max_value;
 
 				setPixel(col, row, CRGB(r, g, b));
 			}
@@ -95,11 +98,24 @@ void RGBLed::processIncomingByte(byte incomingByte) {
 	}
 }
 
-void RGBLed::unpack_6bit_values(byte* buffer, int* values, int length) {
-	for (int i = 0; i < length / 3; i++) {
-		values[4 * i] = buffer[3 * i] >> 2;
-		values[4 * i + 1] = ((buffer[3 * i] & 0x3) << 4) | (buffer[3 * i + 1] >> 4);
-		values[4 * i + 2] = ((buffer[3 * i + 1] & 0xF) << 2) | (buffer[3 * i + 2] >> 6);
-		values[4 * i + 3] = buffer[3 * i + 2] & 0x3F;
+void RGBLed::unpack_values(byte* buffer, int* values, int length, int bitsPerValue) {
+	int bitMask = (1 << bitsPerValue) - 1;
+	int bitsAvailable = 0;
+	int temp = 0;
+
+	int valueIndex = 0;
+
+	for (int i = 0; i < length; i++) {
+		temp = (temp << 8) | buffer[i];
+		bitsAvailable += 8;
+
+		while (bitsAvailable >= bitsPerValue) {
+			bitsAvailable -= bitsPerValue;
+			values[valueIndex++] = (temp >> bitsAvailable) & bitMask;
+		}
+	}
+
+	if (bitsAvailable > 0 && valueIndex < length) {
+		values[valueIndex] = (temp << (bitsPerValue - bitsAvailable)) & bitMask;
 	}
 }
