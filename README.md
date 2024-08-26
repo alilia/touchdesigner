@@ -8,6 +8,24 @@ Since I want to reuse them in the future, I am sharing them here, which makes me
 
 Feedback is appreciated either here, or via Instagram DM: [@ilia.feelin.good](https://www.instagram.com/ilia.feelin.good/).
 
+## TDComm
+
+Base class to abstract communications setup between Arduino and Touchdesigner.
+
+### Arduino object custom init parameters
+
+* `inputDataPinCustom` : TBD
+* `inputMarkerCustom` : TBD
+* `outputDataPinCustom` : TBD
+* `outputMarkerCustom` : TBD
+* `timeoutMiliSecCustom` : TBD
+
+### Touchdesigner component custom parameters
+
+* `Globalserial` : TBD
+* markers : TBD
+* `Amtofdevices` : TBD
+
 ## RGBLed
 
 Goal of this implementation is to be able to stream TOP to an RGB LED Panel via Serial. My RGB LEDs are:
@@ -30,3 +48,7 @@ The goal of this implementation is to be able to (PWM) control basic fans' speed
 The goal of this implementation is to be able to detect when a user blows into a tube. The tube has a [three-wire](https://youtu.be/UJK2JF8wOu8?t=208) 12V cooling fan ([KF0610H1HM-R](https://lomex.hu/pdf/jam/(jam)_kf0610-01.pdf)) in it. So, the third, tachometer wire connected to Arduino with a pull-up resistor, receives two signals per rotation.
 
 However, when accelerating the fan from a static position, only hard blows were detected. Therefore, a base speed is set to the fan. That way a slight change in speed is detected.
+
+### Touchdesigner component custom parameters
+
+* `Basespeed` : 12V cooling fan has a base speed powered by Arduino's 5V, which can vary. Therefore, base speed is set, speed above what value should be published to the serial by Arduino
