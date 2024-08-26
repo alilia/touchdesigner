@@ -1,6 +1,6 @@
 #include "RGBLed.h"
 
-RGBLed matrix(16, 16, 0xFF, 6);
+RGBLed matrix(8, 8, 6, 0xFF, 6);
 
 void setup() {
 	Serial.begin(115200);
