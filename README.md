@@ -24,7 +24,7 @@ Base class to abstract communications setup between Arduino and Touchdesigner.
 
 * `Globalserial` : TBD
 * markers : TBD
-* `Amtofdevices` : TBD
+* `Amtofdevices` : reduces upper limit of 0-255 range by that amount for values published to serial, so there is no clash between markers and values (note: TachInput is not considered, as both base speed and difference published to serial are higher than 255)
 
 ## RGBLed
 
