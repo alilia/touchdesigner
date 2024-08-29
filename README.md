@@ -14,17 +14,24 @@ Base class to abstract communications setup between Arduino and Touchdesigner.
 
 ### Arduino object custom init parameters
 
-* `inputDataPinCustom` : TBD
-* `inputMarkerCustom` : TBD
-* `outputDataPinCustom` : TBD
-* `outputMarkerCustom` : TBD
-* `timeoutMiliSecCustom` : TBD
+Data can come and go to and from Arduino in two ways:
+
+1. Via serial, so data start marker to be published to serial first
+1. Via pin, so pin number to be set
+
+Therefore, a class constructor can accept
+
+* `inputDataPinCustom` : pin number, where Arduino will expect data to come in
+* `inputMarkerCustom` : what data marker to look for before starting processing serial data
+* `outputDataPinCustom` : pin number, where Arduino will publish data to
+* `outputMarkerCustom` : what data marker to look for before publishing to serial
+* `timeoutMiliSecCustom` : in case no data is processed for that time, the object is reset and will wait for the marker
 
 ### Touchdesigner component custom parameters
 
-* `Globalserial` : TBD
-* markers : TBD
-* `Amtofdevices` : reduces upper limit of 0-255 range by that amount for values published to serial, so there is no clash between markers and values (note: TachInput is not considered, as both base speed and difference published to serial are higher than 255)
+* `Globalserial` : Touchdesigner can handle one Serial OUT DAT per Arduino, so this DAT's serial will be used for communication
+* markers : what marker to wait for or send based on the type of class (see: `Arduino object custom init parameters`)
+* `Amtofdevices` : reduces the upper limit of 0-255 range by that amount for values published to serial, so there is no clash between markers and values (note: TachInput is not considered, as both base speed and difference published to serial are higher than 255)
 
 ## RGBLed
 
@@ -36,7 +43,7 @@ Implementation is based on [FastLED](https://github.com/FastLED/FastLED).
 
 ### Arduino object custom init parameters
 
-* `matrixWidthCustom` / `matrixHeightCustom` : size of the matrix, compatible with RGB Led strip (1x32)
+* `matrixWidthCustom` / `matrixHeightCustom` : the size of the matrix, compatible with RGB Led strip (1x32)
 * `rgbResolution` : compresses (bit packing) RGB values for the sake of data transmission speed, therefore FPS
 
 ## FanControl
