@@ -31,7 +31,7 @@ def send_frame_data(frame_data):
 	data.append(int('0x' + parent().par.Framemarker, 16))
 	data += pack_values(frame_data, rgb_resolution)
 
-	op(parent().par.Globalserial).sendBytes(data)
+	parent().par.Globalserial.eval().sendBytes(data)
 
 	return
 

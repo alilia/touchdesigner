@@ -3,6 +3,6 @@ def onValueChange(channel, sampleIndex, val, prev):
 	data.append(int('0x' + parent().par.Basespeedmarker, 16))
 	data.extend([int(val)])
 
-	op(parent().par.Globalserial).sendBytes(data)
+	parent().par.Globalserial.eval().sendBytes(data)
 
 	return
