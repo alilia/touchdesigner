@@ -8,8 +8,10 @@ RGBLed matrix();
 
 void setup() {
 	...
-	matrix.setInputCommunication(0, 0xFF); // first arg - pin or serial, second - either pin nr or marker
+	matrix.setInputCommunicationType(0, 0xFF); // first arg - pin or serial, second - either pin nr or marker
 	matrix.setOutputCommunication(1, 6); // first arg - pin or serial, second - either pin nr or marker
+	matrix.setTimeout(1000);
+
 	matrix.setResolution(8, 8);
 	matrix.setPixelFormat(0); // 0 - rgb, 1 - monochrome
 	matrix.setColorDepth(6); // bitpacking stuff
@@ -26,32 +28,66 @@ void loop() {
 
 */
 
-TDComm::TDComm() { /* nothing to do here */ }
+TDComm::TDComm()
+	:
+		inputDataPin(-1),
+		inputMarker(-999),
+		outputDataPin(-1),
+		outputMarker(-999),
+		timeoutMiliSec(1000)
+	{ /* nothing to do here */ }
 
-TDComm::TDComm(int inputDataPinCustom, int inputMarkerCustom, int outputDataPinCustom, int outputMarkerCustom, int timeoutMiliSecCustom)
-	: inputDataPin(inputDataPinCustom),
-	outputDataPin(outputDataPinCustom),
-	timeoutMiliSec(timeoutMiliSecCustom)
-	{
+void TDComm::setInputCommunication(int typeOfComm, int idOfComm) {
 	/*
-		inputDataPinCustom  -   -1 if n/a
-		inputMarkerCustom   -   will wait for that byte on serial, before proceeding to process the data
-		outputDataPinCustom -   -1 if n/a
-		outputMarkerCustom  -   will output this byte first before the actual data
+		## typeOfComm
+		* `0` : via pin
+		* `1` : via serial
+
+		## idOfComm
+		* In case of pin : pin nr
+		* In case of serial : marker (int)
 	*/
 
-	if (inputMarkerCustom > -1) {
-		inputMarker = inputMarkerCustom;
-	}
+	switch(typeOfComm) {
+		case 0:
+			inputDataPin = idOfComm;
+			break;
 
-	if (outputMarkerCustom > -1) {
-		outputMarker = outputMarkerCustom;
+		case 1:
+			inputMarker = idOfComm;
+			break;
 	}
+}
 
-	resetState();
+void TDComm::setOutputCommunication(int typeOfComm, int idOfComm) {
+	/*
+		## typeOfComm
+		* `0` : via pin
+		* `1` : via serial
+
+		## idOfComm
+		* In case of pin : pin nr
+		* In case of serial : marker (int)
+	*/
+
+	switch(typeOfComm) {
+		case 0:
+			outputDataPin = idOfComm;
+			break;
+
+		case 1:
+			outputMarker = idOfComm;
+			break;
+	}
+}
+
+void TDComm::setTimeout(int timeoutMiliSecCustom) {
+	timeoutMiliSec = timeoutMiliSecCustom;
 }
 
 void TDComm::begin() {
+	resetState();
+
 	if (inputDataPin > -1) {
 		pinMode(inputDataPin, INPUT);
 	}
@@ -75,7 +111,6 @@ void TDComm::writeDataToPin() {
 }
 
 void TDComm::checkStateTimeout() {
-
 	if (state != WAITING_FOR_DATA) {
 		if (millis() - lastMiliSec > timeoutMiliSec) {
 			resetState();

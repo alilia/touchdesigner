@@ -1,22 +1,35 @@
 #include "RGBLed.h"
 
-RGBLed::RGBLed(int matrixWidthCustom, int matrixHeightCustom, int rgbResolution, int inputMarkerCustom, int outputDataPinCustom)
-	: TDComm(-1, inputMarkerCustom, outputDataPinCustom, -1, 1000),
-		matrixWidth(matrixWidthCustom),
-		matrixHeight(matrixHeightCustom),
-		numLeds( matrixWidth * matrixHeight ),
-		rgbResolution(rgbResolution),
+RGBLed::RGBLed()
+	:
 		bytesReceived(0),
 		currentRow(0)
-	{
-		numLeds = matrixWidth * matrixHeight;
-		leds = new CRGB[numLeds];
-		buffer = new byte[numLeds * 3];
-	}
+	{ /* nothing to do here */ }
 
 RGBLed::~RGBLed() {
 	delete[] leds;
 	delete[] buffer;
+}
+
+void RGBLed::setResolution(int matrixWidthCustom, int matrixHeightCustom) {
+	matrixWidth = matrixWidthCustom;
+	matrixHeight = matrixHeightCustom;
+
+	numLeds = matrixWidth * matrixHeight;
+
+	leds = new CRGB[numLeds];
+	buffer = new byte[numLeds * 3];
+}
+
+/*
+void RGBLed::setPixelFormat(int pixelFormatCustom) {
+	pixelFormat = pixelFormatCustom; // bitpacking
+}
+*/
+
+void RGBLed::setColorDepth(int colorDepthCustom) {
+	// 0 - rgb, 1 - monochrome
+	rgbResolution = colorDepthCustom;
 }
 
 void RGBLed::begin() {
