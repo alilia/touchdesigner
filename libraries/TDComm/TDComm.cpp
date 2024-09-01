@@ -1,5 +1,31 @@
 #include "TDComm.h"
 
+/*
+
+I would imagine the usage as follows:
+
+RGBLed matrix();
+
+void setup() {
+	...
+	matrix.setInputCommunication(0, 0xFF); // first arg - pin or serial, second - either pin nr or marker
+	matrix.setOutputCommunication(1, 6); // first arg - pin or serial, second - either pin nr or marker
+	matrix.setResolution(8, 8);
+	matrix.setPixelFormat(0); // 0 - rgb, 1 - monochrome
+	matrix.setColorDepth(6); // bitpacking stuff
+	matrix.setLookup(); // dunno yet how
+
+	matrix.begin();
+}
+
+void loop() {
+	...
+	matrix.receiveSerialData(incomingByte);
+}
+
+
+*/
+
 TDComm::TDComm() { /* nothing to do here */ }
 
 TDComm::TDComm(int inputDataPinCustom, int inputMarkerCustom, int outputDataPinCustom, int outputMarkerCustom, int timeoutMiliSecCustom)
