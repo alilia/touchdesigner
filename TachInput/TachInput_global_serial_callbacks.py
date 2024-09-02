@@ -1,21 +1,21 @@
 class TachInputHandler:
 	# Define states as class attributes
-	WAITING_FOR_DATA = 0
+	WAITING_FOR_MARKER = 0
 	RECEIVING_DATA = 1
 
 	def __init__(self, tach_input_op):
 		self.tach_input_op = tach_input_op
-		self.tach_input_state = TachInputHandler.WAITING_FOR_DATA
+		self.tach_input_state = TachInputHandler.WAITING_FOR_MARKER
 
 	def on_receive(self, message):
 		val = int(message)
 
-		if self.tach_input_state == TachInputHandler.WAITING_FOR_DATA:
+		if self.tach_input_state == TachInputHandler.WAITING_FOR_MARKER:
 			if val == int('0x' + self.tach_input_op.par.Rpmmarker, 16):
 				self.tach_input_state = TachInputHandler.RECEIVING_DATA
 		elif self.tach_input_state == TachInputHandler.RECEIVING_DATA:
 			self.tach_input_op.par.Rpm = val
-			self.tach_input_state = TachInputHandler.WAITING_FOR_DATA
+			self.tach_input_state = TachInputHandler.WAITING_FOR_MARKER
 
 tach_input_handler = TachInputHandler( op('TachInput_20240803_1') )
 

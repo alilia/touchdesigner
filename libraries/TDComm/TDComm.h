@@ -31,7 +31,7 @@ protected:
 	int timeoutMiliSec;
 	unsigned long lastMiliSec;
 
-	enum State { WAITING_FOR_DATA, RECEIVING_DATA } state;
+	enum State { WAITING_FOR_MARKER, RECEIVING_DATA } state;
 	void resetState();
 
 	virtual void writeDataToSerial();
