@@ -34,7 +34,8 @@ public:
 
 	void begin() override;
 	void receiveSerialData(byte incomingByte) override;
-	void processIncomingByte(byte incomingByte);
+	void processIncomingByteFrame(byte incomingByte);
+	void processIncomingByteLookup(byte incomingByte);
 
 	void setPixel(int x, int y, CRGB color);
 	void setBrightness(uint8_t brightness);

@@ -23,7 +23,7 @@ void RGBLed::setResolution(int matrixWidthCustom, int matrixHeightCustom) {
 	numLeds = matrixWidth * matrixHeight;
 
 	leds = new CRGB[numLeds];
-	buffer = new byte[numLeds * pixelFormatMultiplier];
+	buffer = new byte[numLeds * 3]; // even if mono, lookup is rgb
 }
 
 void RGBLed::setPixelFormat(PixelFormat pixelFormatCustom) {
@@ -93,10 +93,11 @@ void RGBLed::receiveSerialData(byte incomingByte) {
 					break;
 
 				case RECEIVING_FRAME:
-					processIncomingByte(incomingByte);
+					processIncomingByteFrame(incomingByte);
 					break;
 
 				case RECEIVING_LOOKUP:
+					processIncomingByteLookup(incomingByte);
 					break;
 			}
 
@@ -104,7 +105,27 @@ void RGBLed::receiveSerialData(byte incomingByte) {
 	}
 }
 
-void RGBLed::processIncomingByte(byte incomingByte) {
+void RGBLed::processIncomingByteLookup(byte incomingByte) {
+	buffer[bytesReceived++] = incomingByte;
+
+	int expectingBytes = 256 * 3;
+
+	if (bytesReceived == expectingBytes) {
+		for (int i = 0; i < 256; i++) {
+			int idx = i * 3;
+
+			int r = buffer[idx];
+			int g = buffer[idx + 1];
+			int b = buffer[idx + 2];
+
+			lookupTable[i] = CRGB(r, g, b);
+		}
+
+		resetState();
+	}
+}
+
+void RGBLed::processIncomingByteFrame(byte incomingByte) {
 	buffer[bytesReceived++] = incomingByte;
 
 	int expectingBytes = numLeds * pixelFormatMultiplier * colorDepth / 8;
@@ -133,7 +154,6 @@ void RGBLed::processIncomingByte(byte incomingByte) {
 			}
 		}
 
-		bytesReceived = 0;
 		update();
 		resetState();
 	}
@@ -163,5 +183,6 @@ void RGBLed::unpack_values(byte* buffer, int* values, int length, int bitsPerVal
 
 void RGBLed::resetState() {
 	TDComm::resetState();
+	bytesReceived = 0;
 	receivingDataType = RECEIVING_NONE;
 }

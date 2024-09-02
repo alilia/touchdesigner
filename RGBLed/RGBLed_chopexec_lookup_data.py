@@ -5,7 +5,9 @@ def syncLookupTable():
 	data.append(int('0x' + parent().par.Lookuptablemarker, 16))
 
 	for i in range(256):
-		data.append(int(op('lookup_data')[0][i]))
+		data.append(int(op('lookup_data')[0][i] * 255))
+		data.append(int(op('lookup_data')[1][i] * 255))
+		data.append(int(op('lookup_data')[2][i] * 255))
 
 	parent().par.Globalserial.eval().sendBytes(data)
 

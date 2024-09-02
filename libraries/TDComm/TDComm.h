@@ -14,7 +14,7 @@ public:
 	void setTimeout(int timeoutMiliSecCustom);
 
 	virtual void begin(); // method triggered in Arduino's setup()
-	virtual void receiveSerialData(byte incomingByte) = 0; // method for processing serial data (usually in processIncomingByte())
+	virtual void receiveSerialData(byte incomingByte) = 0; // method for processing serial data (usually in processIncomingByte...())
 	virtual void loop(); // method for processing input data pin
 
 protected:
