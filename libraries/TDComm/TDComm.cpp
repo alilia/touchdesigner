@@ -1,33 +1,5 @@
 #include "TDComm.h"
 
-/*
-
-I would imagine the usage as follows:
-
-RGBLed matrix();
-
-void setup() {
-	...
-	matrix.setInputCommunicationType(0, 0xFF); // first arg - pin or serial, second - either pin nr or marker
-	matrix.setOutputCommunication(1, 6); // first arg - pin or serial, second - either pin nr or marker
-	matrix.setTimeout(1000);
-
-	matrix.setResolution(8, 8);
-	matrix.setPixelFormat(0); // 0 - rgb, 1 - monochrome
-	matrix.setColorDepth(6); // bitpacking stuff
-	matrix.setLookup(); // dunno yet how
-
-	matrix.begin();
-}
-
-void loop() {
-	...
-	matrix.receiveSerialData(incomingByte);
-}
-
-
-*/
-
 TDComm::TDComm()
 	:
 		inputDataPin(-1),
@@ -37,46 +9,32 @@ TDComm::TDComm()
 		timeoutMiliSec(1000)
 	{ /* nothing to do here */ }
 
-void TDComm::setInputCommunication(int typeOfComm, int idOfComm) {
-	/*
-		## typeOfComm
-		* `0` : via pin
-		* `1` : via serial
-
-		## idOfComm
-		* In case of pin : pin nr
-		* In case of serial : marker (int)
-	*/
-
+void TDComm::setInputCommunication(TypeOfComm typeOfComm, int idOfComm) {
 	switch(typeOfComm) {
-		case 0:
-			inputDataPin = idOfComm;
+		case TDCOMM_PIN:
+			inputDataPin = idOfComm; // pin number
 			break;
 
-		case 1:
-			inputMarker = idOfComm;
+		case TDCOMM_SERIAL:
+			inputMarker = idOfComm; // start of data marker
 			break;
 	}
 }
 
-void TDComm::setOutputCommunication(int typeOfComm, int idOfComm) {
+void TDComm::setOutputCommunication(TypeOfComm typeOfComm, int idOfComm) {
 	/*
-		## typeOfComm
-		* `0` : via pin
-		* `1` : via serial
-
 		## idOfComm
 		* In case of pin : pin nr
 		* In case of serial : marker (int)
 	*/
 
 	switch(typeOfComm) {
-		case 0:
-			outputDataPin = idOfComm;
+		case TDCOMM_PIN:
+			outputDataPin = idOfComm; // pin number
 			break;
 
-		case 1:
-			outputMarker = idOfComm;
+		case TDCOMM_SERIAL:
+			outputMarker = idOfComm; // start of data marker
 			break;
 	}
 }

@@ -5,8 +5,8 @@ FanControl fan;
 void setup() {
 	Serial.begin(9600);
 
-	fan.setInputCommunication(1, 0xFD);
-	fan.setOutputCommunication(0, 9);
+	fan.setInputCommunication(TDComm::TDCOMM_SERIAL, 0xFD);
+	fan.setOutputCommunication(TDComm::TDCOMM_PIN, 9);
 	fan.begin();
 }
 

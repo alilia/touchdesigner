@@ -5,8 +5,8 @@ RGBLed matrix;
 void setup() {
 	Serial.begin(115200);
 
-	matrix.setInputCommunication(1, 0xFF);
-	matrix.setOutputCommunication(0, 6);
+	matrix.setInputCommunication(TDComm::TDCOMM_SERIAL, 0xFF);
+	matrix.setOutputCommunication(TDComm::TDCOMM_PIN, 6);
 
 	matrix.setResolution(8, 8);
 	// matrix.setPixelFormat(0);
