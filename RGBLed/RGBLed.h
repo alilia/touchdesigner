@@ -25,8 +25,10 @@ public:
 	RGBLed();
 	~RGBLed();
 
+	enum PixelFormat {PIXEL_FORMAT_RGB, PIXEL_FORMAT_MONO};
+
 	void setResolution(int matrixWidthCustom, int matrixHeightCustom);
-	// void setPixelFormat(int rgbResolutionCustom);
+	void setPixelFormat(PixelFormat pixelFormatCustom);
 	void setColorDepth(int colorDepthCustom);
 
 	void begin() override;
@@ -47,7 +49,8 @@ private:
 	byte* buffer; // pointer magic provided by chatgpt
 
 	int rgbResolution;
-	// int pixelFormat;
+	PixelFormat pixelFormat;
+	int pixelFormatMultiplier;
 
 	int currentRow;
 	int bytesReceived;

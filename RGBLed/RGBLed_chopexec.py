@@ -1,3 +1,5 @@
+g_pixel_format_multiplier = 3 # should depend on parent().par...
+
 def pack_values(values, bits_per_value):
 	packed_data = bytearray()
 	temp_value = 0
@@ -22,8 +24,9 @@ def send_frame_data(frame_data):
 	panel_rows = parent().par.Panelrows
 	panel_cols = parent().par.Panelcolumns
 	rgb_resolution = parent().par.Rgbresolution
+	pixel_format_multiplier = g_pixel_format_multiplier
 
-	if len(frame_data) != panel_rows * panel_cols * 3:
+	if len(frame_data) != panel_rows * panel_cols * pixel_format_multiplier:
 		raise ValueError("Frame data is not enough.")
 
 	data = bytearray()
@@ -39,6 +42,7 @@ def onValueChange(channel, sampleIndex, val, prev):
 	panel_rows = parent().par.Panelrows
 	panel_cols = parent().par.Panelcolumns
 	rgb_resolution = parent().par.Rgbresolution
+	pixel_format_multiplier = g_pixel_format_multiplier
 
 	img_data = op('img_data')
 	frame_data = []
@@ -47,10 +51,14 @@ def onValueChange(channel, sampleIndex, val, prev):
 		for col in range(panel_cols):
 			max_value = (1 << rgb_resolution) - 1
 			r = int(img_data[0][(row * panel_cols + col)] * max_value)
-			g = int(img_data[1][(row * panel_cols + col)] * max_value)
-			b = int(img_data[2][(row * panel_cols + col)] * max_value)
 
-			frame_data.extend([r, g, b])
+			if (pixel_format_multiplier == 3):
+				g = int(img_data[1][(row * panel_cols + col)] * max_value)
+				b = int(img_data[2][(row * panel_cols + col)] * max_value)
+
+				frame_data.extend([r, g, b])
+			elif (pixel_format_multiplier == 1):
+				frame_data.extend([r])
 
 	send_frame_data(frame_data)
 

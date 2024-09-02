@@ -3,7 +3,8 @@
 RGBLed::RGBLed()
 	:
 		bytesReceived(0),
-		currentRow(0)
+		currentRow(0),
+		pixelFormatMultiplier(3)
 	{ /* nothing to do here */ }
 
 RGBLed::~RGBLed() {
@@ -18,17 +19,17 @@ void RGBLed::setResolution(int matrixWidthCustom, int matrixHeightCustom) {
 	numLeds = matrixWidth * matrixHeight;
 
 	leds = new CRGB[numLeds];
-	buffer = new byte[numLeds * 3];
+	buffer = new byte[numLeds * pixelFormatMultiplier];
 }
 
-/*
-void RGBLed::setPixelFormat(int pixelFormatCustom) {
+void RGBLed::setPixelFormat(PixelFormat pixelFormatCustom) {
 	pixelFormat = pixelFormatCustom; // bitpacking
+
+	if (pixelFormat == PIXEL_FORMAT_RGB) pixelFormatMultiplier = 3;
+	else if (pixelFormat == PIXEL_FORMAT_MONO) pixelFormatMultiplier = 1;
 }
-*/
 
 void RGBLed::setColorDepth(int colorDepthCustom) {
-	// 0 - rgb, 1 - monochrome
 	rgbResolution = colorDepthCustom;
 }
 
@@ -92,22 +93,29 @@ void RGBLed::receiveSerialData(byte incomingByte) {
 void RGBLed::processIncomingByte(byte incomingByte) {
 	buffer[bytesReceived++] = incomingByte;
 
-	int expectingBytes = numLeds * 3 * rgbResolution / 8; // since python is packing 4x6-bit values to 3x8-bits
+	int expectingBytes = numLeds * pixelFormatMultiplier * rgbResolution / 8; // since python is packing 4x6-bit values to 3x8-bits
 
 	if (bytesReceived == expectingBytes) {
-		int unpackedValues[numLeds * 3];
+		int unpackedValues[numLeds * pixelFormatMultiplier];
 		unpack_values(buffer, unpackedValues, bytesReceived, rgbResolution);
 
 		for (int row = 0; row < matrixHeight; row++) {
 			for (int col = 0; col < matrixWidth; col++) {
 				int max_value = (1 << rgbResolution) - 1;
 
-				int idx = ( row * matrixWidth + col ) * 3;
-				int r = unpackedValues[idx] * 255 / max_value;
-				int g = unpackedValues[idx + 1] * 255 / max_value;
-				int b = unpackedValues[idx + 2] * 255 / max_value;
+				int idx = ( row * matrixWidth + col ) * pixelFormatMultiplier;
 
-				setPixel(col, row, CRGB(r, g, b));
+				if (pixelFormat == PIXEL_FORMAT_RGB) {
+					int r = unpackedValues[idx] * 255 / max_value;
+					int g = unpackedValues[idx + 1] * 255 / max_value;
+					int b = unpackedValues[idx + 2] * 255 / max_value;
+
+					setPixel(col, row, CRGB(r, g, b));
+				} else if (pixelFormat == PIXEL_FORMAT_MONO) {
+					int m = unpackedValues[idx] * 255 / max_value;
+
+					setPixel(col, row, CRGB(m, m, m));
+				}
 			}
 		}
 
