@@ -5,7 +5,7 @@
 
 class FanControl : public TDComm {
 public:
-	FanControl(int inputMarkerCustom, int outputDataPinCustom);
+	FanControl();
 	void begin() override;
 	void receiveSerialData(byte incomingByte) override;
 };

@@ -1,8 +1,6 @@
 #include "FanControl.h"
 
-FanControl::FanControl(int inputMarkerCustom, int outputDataPinCustom)
-	: TDComm(-1, inputMarkerCustom, outputDataPinCustom, -1, 1000)
-	{}
+FanControl::FanControl() { /* nothing to do here*/ }
 
 void FanControl::begin() {
 	TDComm::begin();

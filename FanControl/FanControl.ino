@@ -1,9 +1,12 @@
 #include "FanControl.h"
 
-FanControl fan(0xFD, 9);
+FanControl fan;
 
 void setup() {
 	Serial.begin(9600);
+
+	fan.setInputCommunication(1, 0xFD);
+	fan.setOutputCommunication(0, 9);
 	fan.begin();
 }
 
