@@ -3,7 +3,6 @@
 RGBLed::RGBLed()
 	:
 		bytesReceived(0),
-		currentRow(0),
 		pixelFormatMultiplier(3)
 	{
 		for (int i = 0; i<256; i++) {
@@ -80,7 +79,6 @@ void RGBLed::receiveSerialData(byte incomingByte) {
 		case WAITING_FOR_MARKER:
 			if (incomingByte == inputMarker) {
 				state = RECEIVING_DATA;
-				currentRow = 0;
 				bytesReceived = 0;
 				lastMiliSec = millis();
 			}

@@ -56,7 +56,6 @@ private:
 
 	CRGB lookupTable[256];
 
-	int currentRow;
 	int bytesReceived;
 };
 
