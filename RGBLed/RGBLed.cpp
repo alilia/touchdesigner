@@ -34,7 +34,7 @@ void RGBLed::setPixelFormat(PixelFormat pixelFormatCustom) {
 }
 
 void RGBLed::setColorDepth(int colorDepthCustom) {
-	rgbResolution = colorDepthCustom;
+	colorDepth = colorDepthCustom;
 }
 
 void RGBLed::begin() {
@@ -97,15 +97,15 @@ void RGBLed::receiveSerialData(byte incomingByte) {
 void RGBLed::processIncomingByte(byte incomingByte) {
 	buffer[bytesReceived++] = incomingByte;
 
-	int expectingBytes = numLeds * pixelFormatMultiplier * rgbResolution / 8; // since python is packing 4x6-bit values to 3x8-bits
+	int expectingBytes = numLeds * pixelFormatMultiplier * colorDepth / 8; // since python is packing 4x6-bit values to 3x8-bits
 
 	if (bytesReceived == expectingBytes) {
 		int unpackedValues[numLeds * pixelFormatMultiplier];
-		unpack_values(buffer, unpackedValues, bytesReceived, rgbResolution);
+		unpack_values(buffer, unpackedValues, bytesReceived, colorDepth);
 
 		for (int row = 0; row < matrixHeight; row++) {
 			for (int col = 0; col < matrixWidth; col++) {
-				int max_value = (1 << rgbResolution) - 1;
+				int max_value = (1 << colorDepth) - 1;
 
 				int idx = ( row * matrixWidth + col ) * pixelFormatMultiplier;
 

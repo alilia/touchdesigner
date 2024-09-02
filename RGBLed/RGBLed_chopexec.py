@@ -23,7 +23,7 @@ def pack_values(values, bits_per_value):
 def send_frame_data(frame_data):
 	panel_rows = parent().par.Panelrows
 	panel_cols = parent().par.Panelcolumns
-	rgb_resolution = parent().par.Rgbresolution
+	rgb_resolution = parent().par.Colordepth
 	pixel_format_multiplier = g_pixel_format_multiplier
 
 	if len(frame_data) != panel_rows * panel_cols * pixel_format_multiplier:
@@ -41,7 +41,7 @@ def send_frame_data(frame_data):
 def onValueChange(channel, sampleIndex, val, prev):
 	panel_rows = parent().par.Panelrows
 	panel_cols = parent().par.Panelcolumns
-	rgb_resolution = parent().par.Rgbresolution
+	rgb_resolution = parent().par.Colordepth
 	pixel_format_multiplier = g_pixel_format_multiplier
 
 	img_data = op('img_data')

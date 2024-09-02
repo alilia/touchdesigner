@@ -49,7 +49,7 @@ private:
 	CRGB* leds; // pointer magic provided by chatgpt
 	byte* buffer; // pointer magic provided by chatgpt
 
-	int rgbResolution;
+	int colorDepth;
 
 	PixelFormat pixelFormat;
 	int pixelFormatMultiplier;
