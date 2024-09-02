@@ -12,20 +12,17 @@ Feedback is appreciated either here, or via Instagram DM: [@ilia.feelin.good](ht
 
 Base class to abstract communications setup between Arduino and Touchdesigner.
 
-### Arduino object custom init parameters
+### Arduino object custom methods
 
 Data can come and go to and from Arduino in two ways:
 
 1. Via serial, so data start marker to be published to serial first
 1. Via pin, so pin number to be set
 
-Therefore, a class constructor can accept
+Therefore, the structure is the same for both methods:
 
-* `inputDataPinCustom` : pin number, where Arduino will expect data to come in
-* `inputMarkerCustom` : what data marker to look for before starting processing serial data
-* `outputDataPinCustom` : pin number, where Arduino will publish data to
-* `outputMarkerCustom` : what data marker to look for before publishing to serial
-* `timeoutMiliSecCustom` : in case no data is processed for that time, the object is reset and will wait for the marker
+* `setInputCommunication`, `setOutputCommunication`: type of communication (pin or serial) and its ID (pin nr or data marker). All four cases can be set for one given objed (input pin, input serial, output pin, output serial).
+* `setTimeout` (default: `1000` ms): if no relevant data is received for that amout of miliseconds, object is reset to a state, where it watids for data marker (instead of data itself).
 
 ### Touchdesigner component custom parameters
 
@@ -41,10 +38,11 @@ Goal of this implementation is to be able to stream TOP to an RGB LED Panel via 
 
 Implementation is based on [FastLED](https://github.com/FastLED/FastLED).
 
-### Arduino object custom init parameters
+### Arduino object custom methods
 
-* `matrixWidthCustom` / `matrixHeightCustom` : the size of the matrix, compatible with RGB Led strip (1x32)
-* `rgbResolution` : compresses (bit packing) RGB values for the sake of data transmission speed, therefore FPS
+* `setResolution`: the size of the matrix (compatible with RGB Led strip (1, 32))
+* `setColorDepth`: compresses (bit packing) RGB values for the sake of data transmission speed, therefore FPS
+* `setPixelFormat`: pending implementation
 
 ## FanControl
 

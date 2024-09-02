@@ -5,13 +5,20 @@
 
 class TDComm {
 public:
+	enum TypeOfComm { TDCOMM_PIN, TDCOMM_SERIAL };
+
 	TDComm();
-	TDComm(int inputDataPinCustom, int inputMarkerCustom, int outputDataPinCustom, int outputMarkerCustom, int timeoutMiliSecCustom);
+
+	void setInputCommunication(TypeOfComm typeOfComm, int idOfComm);
+	void setOutputCommunication(TypeOfComm typeOfComm, int idOfComm);
+	void setTimeout(int timeoutMiliSecCustom);
+
 	virtual void begin(); // method triggered in Arduino's setup()
 	virtual void receiveSerialData(byte incomingByte) = 0; // method for processing serial data (usually in processIncomingByte())
 	virtual void loop(); // method for processing input data pin
 
 protected:
+
 	int inputMarker; // will look for this byte to start porcessing serial data
 	int outputMarker; // will output this byte before outputting data on serial
 

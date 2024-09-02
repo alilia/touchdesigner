@@ -1,38 +1,54 @@
 #include "TDComm.h"
 
-TDComm::TDComm() { /* nothing to do here */ }
+TDComm::TDComm()
+	:
+		inputDataPin(-1),
+		inputMarker(-999),
+		outputDataPin(-1),
+		outputMarker(-999),
+		timeoutMiliSec(1000)
+	{ /* nothing to do here */ }
 
-TDComm::TDComm(int inputDataPinCustom, int inputMarkerCustom, int outputDataPinCustom, int outputMarkerCustom, int timeoutMiliSecCustom)
-	: inputDataPin(inputDataPinCustom),
-	outputDataPin(outputDataPinCustom),
-	timeoutMiliSec(timeoutMiliSecCustom)
-	{
+void TDComm::setInputCommunication(TypeOfComm typeOfComm, int idOfComm) {
+	switch(typeOfComm) {
+		case TDCOMM_PIN:
+			inputDataPin = idOfComm; // pin number
+			break;
+
+		case TDCOMM_SERIAL:
+			inputMarker = idOfComm; // start of data marker
+			break;
+	}
+}
+
+void TDComm::setOutputCommunication(TypeOfComm typeOfComm, int idOfComm) {
 	/*
-		inputDataPinCustom  -   -1 if n/a
-		inputMarkerCustom   -   will wait for that byte on serial, before proceeding to process the data
-		outputDataPinCustom -   -1 if n/a
-		outputMarkerCustom  -   will output this byte first before the actual data
+		## idOfComm
+		* In case of pin : pin nr
+		* In case of serial : marker (int)
 	*/
 
-	if (inputMarkerCustom > -1) {
-		inputMarker = inputMarkerCustom;
-	}
+	switch(typeOfComm) {
+		case TDCOMM_PIN:
+			outputDataPin = idOfComm; // pin number
+			break;
 
-	if (outputMarkerCustom > -1) {
-		outputMarker = outputMarkerCustom;
+		case TDCOMM_SERIAL:
+			outputMarker = idOfComm; // start of data marker
+			break;
 	}
+}
 
-	resetState();
+void TDComm::setTimeout(int timeoutMiliSecCustom) {
+	timeoutMiliSec = timeoutMiliSecCustom;
 }
 
 void TDComm::begin() {
-	if (inputDataPin > -1) {
-		pinMode(inputDataPin, INPUT);
-	}
+	resetState();
 
-	if (outputDataPin > -1) {
-		pinMode(outputDataPin, OUTPUT);
-	}
+	if (inputDataPin > -1) pinMode(inputDataPin, INPUT);
+
+	if (outputDataPin > -1) pinMode(outputDataPin, OUTPUT);
 }
 
 void TDComm::writeDataToSerial() {
@@ -49,12 +65,7 @@ void TDComm::writeDataToPin() {
 }
 
 void TDComm::checkStateTimeout() {
-
-	if (state != WAITING_FOR_DATA) {
-		if (millis() - lastMiliSec > timeoutMiliSec) {
-			resetState();
-		}
-	}
+	if (state != WAITING_FOR_DATA && millis() - lastMiliSec > timeoutMiliSec) resetState();
 }
 
 void TDComm::resetState() {

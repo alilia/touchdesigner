@@ -22,8 +22,13 @@
 
 class RGBLed : public TDComm {
 public:
-	RGBLed(int matrixWidthCustom, int matrixHeightCustom, int rgbResolution, int inputMarkerCustom, int outputDataPinCustom);
+	RGBLed();
 	~RGBLed();
+
+	void setResolution(int matrixWidthCustom, int matrixHeightCustom);
+	// void setPixelFormat(int rgbResolutionCustom);
+	void setColorDepth(int colorDepthCustom);
+
 	void begin() override;
 	void receiveSerialData(byte incomingByte) override;
 	void processIncomingByte(byte incomingByte);
@@ -42,6 +47,7 @@ private:
 	byte* buffer; // pointer magic provided by chatgpt
 
 	int rgbResolution;
+	// int pixelFormat;
 
 	int currentRow;
 	int bytesReceived;
