@@ -5,9 +5,11 @@
 
 class TachInput : public TDComm {
 public:
-	TachInput(int inputDataPinCustom, int inputMarkerCustom, int outputDataPinCustom, int outputMarkerCustom);
+	TachInput();
 	void begin() override;
 	void receiveSerialData(byte incomingByte) override;
+
+	void setBaseSpeed(int baseSpeedCustom);
 	void countRPM();
 	void loop();
 

@@ -1,9 +1,15 @@
 #include "TachInput.h"
 
-TachInput tach(2, 0xFC, 9, 0xFE);
+TachInput tach;
 
 void setup() {
 	Serial.begin(9600);
+
+	tach.setInputCommunication(0, 2); // reading value on arduino from fan pin
+	tach.setInputCommunication(1, 0xFC); // reading (base speed) value on arduino from serial
+	tach.setOutputCommunication(0, 9); // fan base speed pin (why don't I put it to 5v?)
+	tach.setOutputCommunication(1, 0xFE); // publishing fan rpm value to serial
+
 	tach.begin();
 }
 

@@ -17,7 +17,7 @@ class TachInputHandler:
 			self.tach_input_op.par.Rpm = val
 			self.tach_input_state = TachInputHandler.WAITING_FOR_DATA
 
-tach_input_handler = TachInputHandler( op('TachInput_20240803') )
+tach_input_handler = TachInputHandler( op('TachInput_20240803_1') )
 
 def onReceive(dat, rowIndex, message, byteData):
 	tach_input_handler.on_receive(message)

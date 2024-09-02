@@ -9,16 +9,18 @@ void TachInput::isrCountRPM() {
 	}
 }
 
-TachInput::TachInput(int inputDataPinCustom, int inputMarkerCustom, int outputDataPinCustom, int outputMarkerCustom)
-	: TDComm(inputDataPinCustom, inputMarkerCustom, outputDataPinCustom, outputMarkerCustom, 1000),
-		adjuster(0.1),
-		baseSpeed(22000),
+TachInput::TachInput()
+	:
+		adjuster(0.1), // how often to read fan rpm value
 		lastMillis(0),
 		RPMcounter(0)
-	{}
+	{
+		setBaseSpeed(22000);
+	}
 
 void TachInput::begin() {
-	TDComm::begin(); // Ensure base class initialization
+	TDComm::begin();
+
 	instance = this;
 	attachInterrupt(digitalPinToInterrupt(inputDataPin), TachInput::isrCountRPM, FALLING);
 
@@ -30,6 +32,10 @@ void TachInput::countRPM() {
 	RPMcounter++;
 }
 
+void TachInput::setBaseSpeed(int baseSpeedCustom) {
+	baseSpeed = baseSpeedCustom * 1000;
+}
+
 void TachInput::receiveSerialData(byte incomingByte) {
 	checkStateTimeout();
 
@@ -39,7 +45,7 @@ void TachInput::receiveSerialData(byte incomingByte) {
 			lastMiliSec = millis();
 		}
 	} else if (state == RECEIVING_DATA) {
-		baseSpeed = incomingByte * 1000;
+		setBaseSpeed(incomingByte);
 		resetState();
 	}
 }
