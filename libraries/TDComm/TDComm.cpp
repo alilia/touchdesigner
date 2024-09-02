@@ -46,13 +46,9 @@ void TDComm::setTimeout(int timeoutMiliSecCustom) {
 void TDComm::begin() {
 	resetState();
 
-	if (inputDataPin > -1) {
-		pinMode(inputDataPin, INPUT);
-	}
+	if (inputDataPin > -1) pinMode(inputDataPin, INPUT);
 
-	if (outputDataPin > -1) {
-		pinMode(outputDataPin, OUTPUT);
-	}
+	if (outputDataPin > -1) pinMode(outputDataPin, OUTPUT);
 }
 
 void TDComm::writeDataToSerial() {
@@ -69,11 +65,7 @@ void TDComm::writeDataToPin() {
 }
 
 void TDComm::checkStateTimeout() {
-	if (state != WAITING_FOR_DATA) {
-		if (millis() - lastMiliSec > timeoutMiliSec) {
-			resetState();
-		}
-	}
+	if (state != WAITING_FOR_DATA && millis() - lastMiliSec > timeoutMiliSec) resetState();
 }
 
 void TDComm::resetState() {
