@@ -1,4 +1,5 @@
-g_pixel_format_multiplier = 3 # should depend on parent().par...
+def getPixelFormatMultiplier():
+	return 3 if parent().par.Rgb else 1
 
 def pack_values(values, bits_per_value):
 	packed_data = bytearray()
@@ -24,14 +25,16 @@ def send_frame_data(frame_data):
 	panel_rows = parent().par.Panelrows
 	panel_cols = parent().par.Panelcolumns
 	rgb_resolution = parent().par.Colordepth
-	pixel_format_multiplier = g_pixel_format_multiplier
+	pixel_format_multiplier = getPixelFormatMultiplier()
 
 	if len(frame_data) != panel_rows * panel_cols * pixel_format_multiplier:
 		raise ValueError("Frame data is not enough.")
 
 	data = bytearray()
 
-	data.append(int('0x' + parent().par.Framemarker, 16))
+	data.append(int('0x' + parent().par.Objectmarker, 16)) # addressing arduino object
+	data.append(int('0x' + parent().par.Framemarker, 16)) # addressing arduino object functionality
+
 	data += pack_values(frame_data, rgb_resolution)
 
 	parent().par.Globalserial.eval().sendBytes(data)
@@ -42,7 +45,7 @@ def onValueChange(channel, sampleIndex, val, prev):
 	panel_rows = parent().par.Panelrows
 	panel_cols = parent().par.Panelcolumns
 	rgb_resolution = parent().par.Colordepth
-	pixel_format_multiplier = g_pixel_format_multiplier
+	pixel_format_multiplier = getPixelFormatMultiplier()
 
 	img_data = op('img_data')
 	frame_data = []

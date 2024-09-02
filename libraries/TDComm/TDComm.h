@@ -32,7 +32,7 @@ protected:
 	unsigned long lastMiliSec;
 
 	enum State { WAITING_FOR_MARKER, RECEIVING_DATA } state;
-	void resetState();
+	virtual void resetState();
 
 	virtual void writeDataToSerial();
 	virtual void writeDataToPin();

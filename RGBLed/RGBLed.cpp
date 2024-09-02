@@ -3,6 +3,7 @@
 RGBLed::RGBLed()
 	:
 		bytesReceived(0),
+		receivingDataType(RECEIVING_NONE),
 		pixelFormatMultiplier(3)
 	{
 		for (int i = 0; i<256; i++) {
@@ -82,11 +83,22 @@ void RGBLed::receiveSerialData(byte incomingByte) {
 				bytesReceived = 0;
 				lastMiliSec = millis();
 			}
-
 			break;
 
 		case RECEIVING_DATA:
-			processIncomingByte(incomingByte);
+			switch(receivingDataType) {
+				case RECEIVING_NONE:
+					if (incomingByte == 0xFF) receivingDataType = RECEIVING_FRAME;
+					else if (incomingByte == 0xFE) receivingDataType = RECEIVING_LOOKUP;
+					break;
+
+				case RECEIVING_FRAME:
+					processIncomingByte(incomingByte);
+					break;
+
+				case RECEIVING_LOOKUP:
+					break;
+			}
 
 			break;
 	}
@@ -95,7 +107,7 @@ void RGBLed::receiveSerialData(byte incomingByte) {
 void RGBLed::processIncomingByte(byte incomingByte) {
 	buffer[bytesReceived++] = incomingByte;
 
-	int expectingBytes = numLeds * pixelFormatMultiplier * colorDepth / 8; // since python is packing 4x6-bit values to 3x8-bits
+	int expectingBytes = numLeds * pixelFormatMultiplier * colorDepth / 8;
 
 	if (bytesReceived == expectingBytes) {
 		int unpackedValues[numLeds * pixelFormatMultiplier];
@@ -147,4 +159,9 @@ void RGBLed::unpack_values(byte* buffer, int* values, int length, int bitsPerVal
 	if (bitsAvailable > 0 && valueIndex < length) {
 		values[valueIndex] = (temp << (bitsPerValue - bitsAvailable)) & bitMask;
 	}
+}
+
+void RGBLed::resetState() {
+	TDComm::resetState();
+	receivingDataType = RECEIVING_NONE;
 }

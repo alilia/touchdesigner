@@ -49,6 +49,9 @@ private:
 	CRGB* leds; // pointer magic provided by chatgpt
 	byte* buffer; // pointer magic provided by chatgpt
 
+	enum ReceivingDataType { RECEIVING_NONE, RECEIVING_FRAME, RECEIVING_LOOKUP } receivingDataType;
+	virtual void resetState() override;
+
 	int colorDepth;
 
 	PixelFormat pixelFormat;
