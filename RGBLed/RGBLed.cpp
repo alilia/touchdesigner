@@ -5,7 +5,11 @@ RGBLed::RGBLed()
 		bytesReceived(0),
 		currentRow(0),
 		pixelFormatMultiplier(3)
-	{ /* nothing to do here */ }
+	{
+		for (int i = 0; i<256; i++) {
+			lookupTable[i] = CRGB(i, 0, 0);
+		}
+	}
 
 RGBLed::~RGBLed() {
 	delete[] leds;
@@ -114,7 +118,7 @@ void RGBLed::processIncomingByte(byte incomingByte) {
 				} else if (pixelFormat == PIXEL_FORMAT_MONO) {
 					int m = unpackedValues[idx] * 255 / max_value;
 
-					setPixel(col, row, CRGB(m, m, m));
+					setPixel(col, row, lookupTable[m]);
 				}
 			}
 		}

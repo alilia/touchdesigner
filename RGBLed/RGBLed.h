@@ -30,6 +30,7 @@ public:
 	void setResolution(int matrixWidthCustom, int matrixHeightCustom);
 	void setPixelFormat(PixelFormat pixelFormatCustom);
 	void setColorDepth(int colorDepthCustom);
+	void setLookupTable();
 
 	void begin() override;
 	void receiveSerialData(byte incomingByte) override;
@@ -49,8 +50,11 @@ private:
 	byte* buffer; // pointer magic provided by chatgpt
 
 	int rgbResolution;
+
 	PixelFormat pixelFormat;
 	int pixelFormatMultiplier;
+
+	CRGB lookupTable[256];
 
 	int currentRow;
 	int bytesReceived;
