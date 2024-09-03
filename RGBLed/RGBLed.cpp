@@ -3,8 +3,14 @@
 RGBLed::RGBLed()
 	:
 		bytesReceived(0),
-		currentRow(0)
-	{ /* nothing to do here */ }
+		receivingDataType(RECEIVING_NONE),
+		pixelFormatMultiplier(3)
+	{
+		// filling table for debug
+		for (int i = 0; i<256; i++) {
+			lookupTable[i] = CRGB(i, 0, 0);
+		}
+	}
 
 RGBLed::~RGBLed() {
 	delete[] leds;
@@ -18,18 +24,18 @@ void RGBLed::setResolution(int matrixWidthCustom, int matrixHeightCustom) {
 	numLeds = matrixWidth * matrixHeight;
 
 	leds = new CRGB[numLeds];
-	buffer = new byte[numLeds * 3];
+	buffer = new byte[numLeds * 3]; // even if mono, lookup is rgb
 }
 
-/*
-void RGBLed::setPixelFormat(int pixelFormatCustom) {
+void RGBLed::setPixelFormat(PixelFormat pixelFormatCustom) {
 	pixelFormat = pixelFormatCustom; // bitpacking
+
+	if (pixelFormat == PIXEL_FORMAT_RGB) pixelFormatMultiplier = 3;
+	else if (pixelFormat == PIXEL_FORMAT_MONO) pixelFormatMultiplier = 1;
 }
-*/
 
 void RGBLed::setColorDepth(int colorDepthCustom) {
-	// 0 - rgb, 1 - monochrome
-	rgbResolution = colorDepthCustom;
+	colorDepth = colorDepthCustom;
 }
 
 void RGBLed::begin() {
@@ -72,46 +78,83 @@ void RGBLed::receiveSerialData(byte incomingByte) {
 	checkStateTimeout();
 
 	switch(state) {
-		case WAITING_FOR_DATA:
+		case WAITING_FOR_MARKER:
 			if (incomingByte == inputMarker) {
 				state = RECEIVING_DATA;
-				currentRow = 0;
 				bytesReceived = 0;
 				lastMiliSec = millis();
 			}
-
 			break;
 
 		case RECEIVING_DATA:
-			processIncomingByte(incomingByte);
+			switch(receivingDataType) {
+				case RECEIVING_NONE:
+					if (incomingByte == 0xFF) receivingDataType = RECEIVING_FRAME;
+					else if (incomingByte == 0xFE) receivingDataType = RECEIVING_LOOKUP;
+					break;
+
+				case RECEIVING_FRAME:
+					processIncomingByteFrame(incomingByte);
+					break;
+
+				case RECEIVING_LOOKUP:
+					processIncomingByteLookup(incomingByte);
+					break;
+			}
 
 			break;
 	}
 }
 
-void RGBLed::processIncomingByte(byte incomingByte) {
+void RGBLed::processIncomingByteLookup(byte incomingByte) {
 	buffer[bytesReceived++] = incomingByte;
 
-	int expectingBytes = numLeds * 3 * rgbResolution / 8; // since python is packing 4x6-bit values to 3x8-bits
+	int expectingBytes = 256 * 3;
 
 	if (bytesReceived == expectingBytes) {
-		int unpackedValues[numLeds * 3];
-		unpack_values(buffer, unpackedValues, bytesReceived, rgbResolution);
+		for (int i = 0; i < 256; i++) {
+			int idx = i * 3;
+
+			int r = buffer[idx];
+			int g = buffer[idx + 1];
+			int b = buffer[idx + 2];
+
+			lookupTable[i] = CRGB(r, g, b);
+		}
+
+		resetState();
+	}
+}
+
+void RGBLed::processIncomingByteFrame(byte incomingByte) {
+	buffer[bytesReceived++] = incomingByte;
+
+	int expectingBytes = numLeds * pixelFormatMultiplier * colorDepth / 8;
+
+	if (bytesReceived == expectingBytes) {
+		int unpackedValues[numLeds * pixelFormatMultiplier];
+		unpack_values(buffer, unpackedValues, bytesReceived, colorDepth);
 
 		for (int row = 0; row < matrixHeight; row++) {
 			for (int col = 0; col < matrixWidth; col++) {
-				int max_value = (1 << rgbResolution) - 1;
+				int max_value = (1 << colorDepth) - 1;
 
-				int idx = ( row * matrixWidth + col ) * 3;
-				int r = unpackedValues[idx] * 255 / max_value;
-				int g = unpackedValues[idx + 1] * 255 / max_value;
-				int b = unpackedValues[idx + 2] * 255 / max_value;
+				int idx = ( row * matrixWidth + col ) * pixelFormatMultiplier;
 
-				setPixel(col, row, CRGB(r, g, b));
+				if (pixelFormat == PIXEL_FORMAT_RGB) {
+					int r = unpackedValues[idx] * 255 / max_value;
+					int g = unpackedValues[idx + 1] * 255 / max_value;
+					int b = unpackedValues[idx + 2] * 255 / max_value;
+
+					setPixel(col, row, CRGB(r, g, b));
+				} else if (pixelFormat == PIXEL_FORMAT_MONO) {
+					int m = unpackedValues[idx] * 255 / max_value;
+
+					setPixel(col, row, lookupTable[m]);
+				}
 			}
 		}
 
-		bytesReceived = 0;
 		update();
 		resetState();
 	}
@@ -137,4 +180,10 @@ void RGBLed::unpack_values(byte* buffer, int* values, int length, int bitsPerVal
 	if (bitsAvailable > 0 && valueIndex < length) {
 		values[valueIndex] = (temp << (bitsPerValue - bitsAvailable)) & bitMask;
 	}
+}
+
+void RGBLed::resetState() {
+	TDComm::resetState();
+	bytesReceived = 0;
+	receivingDataType = RECEIVING_NONE;
 }

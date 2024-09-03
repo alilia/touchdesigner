@@ -14,7 +14,7 @@ public:
 	void setTimeout(int timeoutMiliSecCustom);
 
 	virtual void begin(); // method triggered in Arduino's setup()
-	virtual void receiveSerialData(byte incomingByte) = 0; // method for processing serial data (usually in processIncomingByte())
+	virtual void receiveSerialData(byte incomingByte) = 0; // method for processing serial data (usually in processIncomingByte...())
 	virtual void loop(); // method for processing input data pin
 
 protected:
@@ -31,8 +31,8 @@ protected:
 	int timeoutMiliSec;
 	unsigned long lastMiliSec;
 
-	enum State { WAITING_FOR_DATA, RECEIVING_DATA } state;
-	void resetState();
+	enum State { WAITING_FOR_MARKER, RECEIVING_DATA } state;
+	virtual void resetState();
 
 	virtual void writeDataToSerial();
 	virtual void writeDataToPin();

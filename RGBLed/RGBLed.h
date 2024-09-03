@@ -25,13 +25,17 @@ public:
 	RGBLed();
 	~RGBLed();
 
+	enum PixelFormat {PIXEL_FORMAT_RGB, PIXEL_FORMAT_MONO};
+
 	void setResolution(int matrixWidthCustom, int matrixHeightCustom);
-	// void setPixelFormat(int rgbResolutionCustom);
+	void setPixelFormat(PixelFormat pixelFormatCustom);
 	void setColorDepth(int colorDepthCustom);
+	void setLookupTable();
 
 	void begin() override;
 	void receiveSerialData(byte incomingByte) override;
-	void processIncomingByte(byte incomingByte);
+	void processIncomingByteFrame(byte incomingByte);
+	void processIncomingByteLookup(byte incomingByte);
 
 	void setPixel(int x, int y, CRGB color);
 	void setBrightness(uint8_t brightness);
@@ -46,10 +50,16 @@ private:
 	CRGB* leds; // pointer magic provided by chatgpt
 	byte* buffer; // pointer magic provided by chatgpt
 
-	int rgbResolution;
-	// int pixelFormat;
+	enum ReceivingDataType { RECEIVING_NONE, RECEIVING_FRAME, RECEIVING_LOOKUP } receivingDataType;
+	virtual void resetState() override;
 
-	int currentRow;
+	int colorDepth;
+
+	PixelFormat pixelFormat;
+	int pixelFormatMultiplier;
+
+	CRGB lookupTable[256];
+
 	int bytesReceived;
 };
 

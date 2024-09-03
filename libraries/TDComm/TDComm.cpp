@@ -65,11 +65,11 @@ void TDComm::writeDataToPin() {
 }
 
 void TDComm::checkStateTimeout() {
-	if (state != WAITING_FOR_DATA && millis() - lastMiliSec > timeoutMiliSec) resetState();
+	if (state != WAITING_FOR_MARKER && millis() - lastMiliSec > timeoutMiliSec) resetState();
 }
 
 void TDComm::resetState() {
-	state = WAITING_FOR_DATA;
+	state = WAITING_FOR_MARKER;
 	lastMiliSec = -1;
 }
 
@@ -79,7 +79,7 @@ void TDComm::loop() {}
 void TDComm::receiveSerialData(byte incomingByte) {
 	checkStateTimeout();
 
-	if (state == WAITING_FOR_DATA) {
+	if (state == WAITING_FOR_MARKER) {
 		if (incomingByte == inputMarker) {
 			state = RECEIVING_DATA;
 			lastMiliSec = millis();

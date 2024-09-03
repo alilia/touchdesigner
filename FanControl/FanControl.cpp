@@ -13,7 +13,7 @@ void FanControl::receiveSerialData(byte incomingByte) {
 	checkStateTimeout();
 
 	switch(state) {
-		case WAITING_FOR_DATA:
+		case WAITING_FOR_MARKER:
 			if (incomingByte == inputMarker) {
 				state = RECEIVING_DATA;
 				lastMiliSec = millis();
