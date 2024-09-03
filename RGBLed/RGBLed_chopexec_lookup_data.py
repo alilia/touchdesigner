@@ -1,5 +1,6 @@
 def syncLookupTable():
 	data = bytearray()
+	upper_limit = 255 - parent().par.Amtofdevices
 
 	try:
 		object_marker = int('0x' + parent().par.Objectmarker, 16)
@@ -14,11 +15,11 @@ def syncLookupTable():
 
 	try:
 		for i in range(256):
-			a = op('lookup_data')[0][i]
+			a = op('lookup_data')[3][i]
 
-			data.append(int(op('lookup_data')[0][i] * 255 * a))
-			data.append(int(op('lookup_data')[1][i] * 255 * a))
-			data.append(int(op('lookup_data')[2][i] * 255 * a))
+			data.append(int(op('lookup_data')[0][i] * upper_limit * a))
+			data.append(int(op('lookup_data')[1][i] * upper_limit * a))
+			data.append(int(op('lookup_data')[2][i] * upper_limit * a))
 
 		sent_bytes = parent().par.Globalserial.eval().sendBytes(data)
 		print(f"Data successfully sent. Length: {sent_bytes}")

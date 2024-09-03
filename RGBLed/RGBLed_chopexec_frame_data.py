@@ -1,10 +1,13 @@
 def getPixelFormatMultiplier():
 	return 3 if parent().par.Rgba else 1
 
-def pack_values(values, bits_per_value):
+def pack_values(values, bits_per_value, upper_limit):
 	packed_data = bytearray()
 	temp_value = 0
 	bits_filled = 0
+
+	# Ensure max 8-bit value does not exceed upper_limit
+	max_allowed_value = min(upper_limit, 255)
 
 	for value in values:
 		temp_value = (temp_value << bits_per_value) | value
@@ -13,10 +16,14 @@ def pack_values(values, bits_per_value):
 		while bits_filled >= 8:
 			bits_filled -= 8
 			packed_byte = (temp_value >> bits_filled) & 0xFF
+			if packed_byte > max_allowed_value:
+				packed_byte = max_allowed_value
 			packed_data.append(packed_byte)
 
 	if bits_filled > 0:
 		packed_byte = (temp_value << (8 - bits_filled)) & 0xFF
+		if packed_byte > max_allowed_value:
+			packed_byte = max_allowed_value
 		packed_data.append(packed_byte)
 
 	return packed_data
@@ -25,6 +32,8 @@ def send_frame_data(frame_data):
 	panel_rows = parent().par.Panelrows
 	panel_cols = parent().par.Panelcolumns
 	rgb_resolution = parent().par.Colordepth
+	amt_of_devices = parent().par.Amtofdevices
+
 	pixel_format_multiplier = getPixelFormatMultiplier()
 
 	if len(frame_data) != panel_rows * panel_cols * pixel_format_multiplier:
@@ -44,7 +53,8 @@ def send_frame_data(frame_data):
 		return
 
 	try:
-		data += pack_values(frame_data, rgb_resolution)
+		upper_limit = 255 - amt_of_devices
+		data += pack_values(frame_data, rgb_resolution, upper_limit)
 
 		sent_bytes = parent().par.Globalserial.eval().sendBytes(data)
 		print(f"Data successfully sent. Length: {sent_bytes}")
