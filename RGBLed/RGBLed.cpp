@@ -6,6 +6,7 @@ RGBLed::RGBLed()
 		receivingDataType(RECEIVING_NONE),
 		pixelFormatMultiplier(3)
 	{
+		// filling table for debug
 		for (int i = 0; i<256; i++) {
 			lookupTable[i] = CRGB(i, 0, 0);
 		}

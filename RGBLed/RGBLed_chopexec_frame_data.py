@@ -32,12 +32,25 @@ def send_frame_data(frame_data):
 
 	data = bytearray()
 
-	data.append(int('0x' + parent().par.Objectmarker, 16)) # addressing arduino object
-	data.append(int('0x' + parent().par.Framemarker, 16)) # addressing arduino object functionality
+	try:
+		object_marker = int('0x' + parent().par.Objectmarker, 16)
+		frame_marker = int('0x' + parent().par.Framemarker, 16)
 
-	data += pack_values(frame_data, rgb_resolution)
+		data.append(object_marker) # addressing arduino object
+		data.append(frame_marker) # addressing arduino object functionality
 
-	parent().par.Globalserial.eval().sendBytes(data)
+	except ValueError as e:
+		print(f"Error converting markers to int: {e}")
+		return
+
+	try:
+		data += pack_values(frame_data, rgb_resolution)
+
+		sent_bytes = parent().par.Globalserial.eval().sendBytes(data)
+		print(f"Data successfully sent. Length: {sent_bytes}")
+
+	except Exception as e:
+		print(f"Error sending frame data: {e}")
 
 	return
 
