@@ -91,6 +91,7 @@ void RGBLed::receiveSerialData(byte incomingByte) {
 				case RECEIVING_NONE:
 					if (incomingByte == 0xFF) receivingDataType = RECEIVING_FRAME;
 					else if (incomingByte == 0xFE) receivingDataType = RECEIVING_LOOKUP;
+					else resetState();
 					break;
 
 				case RECEIVING_FRAME:
