@@ -21,8 +21,8 @@ Data can come and go to and from Arduino in two ways:
 
 Therefore, the structure is the same for both methods:
 
-* `setInputCommunication`, `setOutputCommunication`: type of communication (pin or serial) and its ID (pin nr or data marker). All four cases can be set for one given objed (input pin, input serial, output pin, output serial).
-* `setTimeout` (default: `1000` ms): if no relevant data is received for that amout of miliseconds, object is reset to a state, where it watids for data marker (instead of data itself).
+* `setInputCommunication`, `setOutputCommunication`: type of communication (`TDCOMM_PIN` or `TDCOMM_SERIAL`) and its ID (pin nr or data marker). All four cases can be set for one given object (input pin, input serial, output pin, output serial).
+* `setTimeout` (default: `1000` ms): if no relevant data is received for that amount of milliseconds, the object is reset to a state, where it waits for the data marker (instead of the data itself).
 
 ### Touchdesigner component custom parameters
 
@@ -30,10 +30,12 @@ Therefore, the structure is the same for both methods:
 * markers : what marker to wait for or send based on the type of class (see: `Arduino object custom init parameters`)
 * `Amtofdevices` : reduces the upper limit of 0-255 range by that amount for values published to serial, so there is no clash between markers and values (note: TachInput is not considered, as both base speed and difference published to serial are higher than 255)
 
+> **Best practice** If there are multiple same direction functionalities involved per component, the `bytearray` structure is suggested to have structure as follows: 1st byte - object marker, 2nd byte - functionality marker, rest bytes - data itself.
+
 ## RGBLed
 
 Goal of this implementation is to be able to stream TOP to an RGB LED Panel via Serial. My RGB LEDs are:
-* [8x8 panel](https://www.aliexpress.com/item/1005003901833984.html?spm=a2g0o.order_list.order_list_main.11.4db81802bIbykX): WS2812B-powered, 5V snake-shaped strip (also available: 16x16, 8x32, strip)
+* [8x8 panel](https://www.aliexpress.com/item/1005003901833984.html): WS2812B-powered, 5V snake-shaped strip (also available: 16x16, 8x32, strip)
 * [10(x3) strip](https://leddiszkont.hu/led-szalag-led-szalag-magic-1.-magyarorszagon-a-legolcsobb/LLSZ505048L2EVRGBMAG/adatlap.html): SM16703-powered, 12V strip with 3 RGB LEDs / chip (note, that this chip is GRB)
 
 Implementation is based on [FastLED](https://github.com/FastLED/FastLED).
@@ -42,7 +44,15 @@ Implementation is based on [FastLED](https://github.com/FastLED/FastLED).
 
 * `setResolution`: the size of the matrix (compatible with RGB Led strip (1, 32))
 * `setColorDepth`: compresses (bit packing) RGB values for the sake of data transmission speed, therefore FPS
-* `setPixelFormat`: pending implementation
+* `setPixelFormat`: specifies the structure of frame pixel data
+  * `PIXEL_FORMAT_RGB`: 8-bit int per each of RGB channels is extracted
+  * `PIXEL_FORMAT_MONO`: 8-bit int is extracted from R channel
+
+### Touchdesigner component custom parameters
+
+* `Rgba`: RGB (multiplied ba A) is sent (`ON`) or only R (`OFF`)
+* `Lookuptable` (TOP): will be used as a lookup table by Arduino, once synced by `Synclookuptable`
+* `Synclookuptable`: sends `Lookuptable` in a format of 256 RGB values
 
 ## FanControl
 
