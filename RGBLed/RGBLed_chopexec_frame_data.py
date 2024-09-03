@@ -1,5 +1,5 @@
 def getPixelFormatMultiplier():
-	return 3 if parent().par.Rgb else 1
+	return 3 if parent().par.Rgba else 1
 
 def pack_values(values, bits_per_value):
 	packed_data = bytearray()
@@ -53,11 +53,16 @@ def onValueChange(channel, sampleIndex, val, prev):
 	for row in range(panel_rows):
 		for col in range(panel_cols):
 			max_value = (1 << rgb_resolution) - 1
-			r = int(img_data[0][(row * panel_cols + col)] * max_value)
+			idx = (row * panel_cols + col)
+
+			r = int(img_data[0][idx] * max_value)
 
 			if (pixel_format_multiplier == 3):
-				g = int(img_data[1][(row * panel_cols + col)] * max_value)
-				b = int(img_data[2][(row * panel_cols + col)] * max_value)
+				a = img_data[3][idx] # no need to adjust the value, since alpha channel is used for brightness
+
+				r = int(img_data[0][idx] * max_value * a) # r = r * a would loose extra color depth
+				g = int(img_data[1][idx] * max_value * a)
+				b = int(img_data[2][idx] * max_value * a)
 
 				frame_data.extend([r, g, b])
 			elif (pixel_format_multiplier == 1):
