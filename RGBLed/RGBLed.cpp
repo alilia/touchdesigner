@@ -4,6 +4,7 @@ RGBLed::RGBLed()
 	:
 		bytesReceived(0),
 		receivingDataType(RECEIVING_NONE),
+		inputScale(1),
 		pixelFormatMultiplier(3)
 	{
 		// filling table for debug
@@ -38,6 +39,12 @@ void RGBLed::setColorDepth(int colorDepthCustom) {
 	colorDepth = colorDepthCustom;
 }
 
+void RGBLed::setInputScale(int inputScaleCustom) {
+	if (!inputScaleCustom) inputScaleCustom = 0.5;
+
+	inputScale = inputScaleCustom;
+}
+
 void RGBLed::begin() {
 	randomSeed(analogRead(0));
 
@@ -63,10 +70,25 @@ void RGBLed::begin() {
 	update();
 }
 
+int RGBLed::calculateLedIndex(int x, int y) {
+	return (y % 2 == 0) ? (y * matrixWidth + x) : (y * matrixWidth + (matrixWidth - 1 - x));
+}
+
 void RGBLed::setPixel(int x, int y, CRGB color) {
-	if (x >= 0 && x < matrixWidth && y >= 0 && y < matrixHeight) {
-		int ledIndex = (y % 2 == 0) ? (y * matrixWidth + x) : (y * matrixWidth + (matrixWidth - 1 - x));
-		leds[ledIndex] = color;
+	if (x >= 0 && x < matrixWidth / inputScale && y >= 0 && y < matrixHeight / inputScale) {
+		// not sure if cpp need explicit casting in that case
+		x *= inputScale;
+		y *= inputScale;
+
+		if (inputScale > 1) {
+			for (int i = 0; i < inputScale; i++) {
+				for (int j = 0; j < inputScale; j++) {
+					leds[calculateLedIndex(x + i, y + j)] = color;
+				}
+			}
+		} else {
+			leds[calculateLedIndex(x, y)] = color;
+		}
 	}
 }
 

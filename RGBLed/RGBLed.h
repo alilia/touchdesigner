@@ -30,6 +30,9 @@ public:
 	void setResolution(int matrixWidthCustom, int matrixHeightCustom);
 	void setPixelFormat(PixelFormat pixelFormatCustom);
 	void setColorDepth(int colorDepthCustom);
+	void setInputScale(int inputScaleCustom);
+
+	int calculateLedIndex(int x, int y);
 
 	void begin() override;
 	void receiveSerialData(byte incomingByte) override;
@@ -52,6 +55,7 @@ private:
 	void setPixel(int x, int y, CRGB color);
 	void update();
 
+	float inputScale;
 	int colorDepth;
 
 	PixelFormat pixelFormat;
