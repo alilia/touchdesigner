@@ -22,6 +22,9 @@ void RGBLed::setResolution(int matrixWidthCustom, int matrixHeightCustom) {
 	matrixWidth = matrixWidthCustom;
 	matrixHeight = matrixHeightCustom;
 
+	matrixWidthScaled = matrixWidth / inputScale;
+	matrixHeightScaled = matrixHeight / inputScale;
+
 	numLeds = matrixWidth * matrixHeight;
 
 	leds = new CRGB[numLeds];
@@ -75,12 +78,11 @@ int RGBLed::calculateLedIndex(int x, int y) {
 }
 
 void RGBLed::setPixel(int x, int y, CRGB color) {
-	if (x >= 0 && x < matrixWidth / inputScale && y >= 0 && y < matrixHeight / inputScale) {
-		// not sure if cpp need explicit casting in that case
-		x *= inputScale;
-		y *= inputScale;
-
+	if (x >= 0 && x < matrixWidthScaled && y >= 0 && y < matrixHeightScaled) {
 		if (inputScale > 1) {
+			x *= inputScale;
+			y *= inputScale;
+
 			for (int i = 0; i < inputScale; i++) {
 				for (int j = 0; j < inputScale; j++) {
 					leds[calculateLedIndex(x + i, y + j)] = color;
@@ -152,17 +154,28 @@ void RGBLed::processIncomingByteLookup(byte incomingByte) {
 void RGBLed::processIncomingByteFrame(byte incomingByte) {
 	buffer[bytesReceived++] = incomingByte;
 
-	int expectingBytes = numLeds * pixelFormatMultiplier * colorDepth / 8;
+	// base led number
+	int expectingBytes = numLeds;
+
+	// mono or rgb
+	expectingBytes *= pixelFormatMultiplier;
+
+	// ratio based on bitpacking
+	expectingBytes *= colorDepth;
+	expectingBytes /= 8;
+
+	// scaling down the expectation
+	expectingBytes /= pow(inputScale, inputScale);
 
 	if (bytesReceived == expectingBytes) {
 		int unpackedValues[numLeds * pixelFormatMultiplier];
 		unpack_values(buffer, unpackedValues, bytesReceived, colorDepth);
 
-		for (int row = 0; row < matrixHeight; row++) {
-			for (int col = 0; col < matrixWidth; col++) {
+		for (int row = 0; row < matrixHeightScaled; row++) {
+			for (int col = 0; col < matrixWidthScaled; col++) {
 				int max_value = (1 << colorDepth) - 1;
 
-				int idx = ( row * matrixWidth + col ) * pixelFormatMultiplier;
+				int idx = ( row * matrixWidthScaled + col ) * pixelFormatMultiplier;
 
 				if (pixelFormat == PIXEL_FORMAT_RGB) {
 					int r = unpackedValues[idx] * 255 / max_value;

@@ -45,6 +45,9 @@ private:
 
 	int matrixWidth;
 	int matrixHeight;
+	int matrixWidthScaled;
+	int matrixHeightScaled;
+
 	int numLeds;
 	CRGB* leds; // pointer magic provided by chatgpt
 	byte* buffer; // pointer magic provided by chatgpt
