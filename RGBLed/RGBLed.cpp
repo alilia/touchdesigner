@@ -165,7 +165,7 @@ void RGBLed::processIncomingByteFrame(byte incomingByte) {
 	expectingBytes /= 8;
 
 	// scaling down the expectation
-	expectingBytes /= pow(inputScale, inputScale);
+	expectingBytes /= pow(inputScale, 2);
 
 	if (bytesReceived == expectingBytes) {
 		int unpackedValues[numLeds * pixelFormatMultiplier];
