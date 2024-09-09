@@ -30,22 +30,24 @@ public:
 	void setResolution(int matrixWidthCustom, int matrixHeightCustom);
 	void setPixelFormat(PixelFormat pixelFormatCustom);
 	void setColorDepth(int colorDepthCustom);
-	void setLookupTable();
+	void setInputScale(int inputScaleCustom);
+
+	int calculateLedIndex(int x, int y);
 
 	void begin() override;
 	void receiveSerialData(byte incomingByte) override;
 	void processIncomingByteFrame(byte incomingByte);
 	void processIncomingByteLookup(byte incomingByte);
 
-	void setPixel(int x, int y, CRGB color);
-	void setBrightness(uint8_t brightness);
-	void update();
 
 private:
 	void unpack_values(byte* buffer, int* values, int length, int bitsPerValue);
 
 	int matrixWidth;
 	int matrixHeight;
+	int matrixWidthScaled;
+	int matrixHeightScaled;
+
 	int numLeds;
 	CRGB* leds; // pointer magic provided by chatgpt
 	byte* buffer; // pointer magic provided by chatgpt
@@ -53,6 +55,10 @@ private:
 	enum ReceivingDataType { RECEIVING_NONE, RECEIVING_FRAME, RECEIVING_LOOKUP } receivingDataType;
 	virtual void resetState() override;
 
+	void setPixel(int x, int y, CRGB color);
+	void update();
+
+	int inputScale;
 	int colorDepth;
 
 	PixelFormat pixelFormat;

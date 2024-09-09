@@ -10,6 +10,8 @@ void setup() {
 
 	matrix.setPixelFormat(RGBLed::PIXEL_FORMAT_RGB);
 	matrix.setColorDepth(6);
+	// matrix.setInputScale(2); // leaving here, to make this feature visible
+
 	matrix.setResolution(8, 8);
 
 	matrix.begin();

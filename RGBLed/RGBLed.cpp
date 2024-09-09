@@ -4,6 +4,7 @@ RGBLed::RGBLed()
 	:
 		bytesReceived(0),
 		receivingDataType(RECEIVING_NONE),
+		inputScale(1),
 		pixelFormatMultiplier(3)
 	{
 		// filling table for debug
@@ -21,6 +22,9 @@ void RGBLed::setResolution(int matrixWidthCustom, int matrixHeightCustom) {
 	matrixWidth = matrixWidthCustom;
 	matrixHeight = matrixHeightCustom;
 
+	matrixWidthScaled = matrixWidth / inputScale;
+	matrixHeightScaled = matrixHeight / inputScale;
+
 	numLeds = matrixWidth * matrixHeight;
 
 	leds = new CRGB[numLeds];
@@ -36,6 +40,12 @@ void RGBLed::setPixelFormat(PixelFormat pixelFormatCustom) {
 
 void RGBLed::setColorDepth(int colorDepthCustom) {
 	colorDepth = colorDepthCustom;
+}
+
+void RGBLed::setInputScale(int inputScaleCustom) {
+	if (inputScaleCustom < 1) inputScaleCustom = 1;
+
+	inputScale = inputScaleCustom;
 }
 
 void RGBLed::begin() {
@@ -63,10 +73,24 @@ void RGBLed::begin() {
 	update();
 }
 
+int RGBLed::calculateLedIndex(int x, int y) {
+	return (y % 2 == 0) ? (y * matrixWidth + x) : (y * matrixWidth + (matrixWidth - 1 - x));
+}
+
 void RGBLed::setPixel(int x, int y, CRGB color) {
-	if (x >= 0 && x < matrixWidth && y >= 0 && y < matrixHeight) {
-		int ledIndex = (y % 2 == 0) ? (y * matrixWidth + x) : (y * matrixWidth + (matrixWidth - 1 - x));
-		leds[ledIndex] = color;
+	if (x >= 0 && x < matrixWidthScaled && y >= 0 && y < matrixHeightScaled) {
+		if (inputScale > 1) {
+			x *= inputScale;
+			y *= inputScale;
+
+			for (int i = 0; i < inputScale; i++) {
+				for (int j = 0; j < inputScale; j++) {
+					leds[calculateLedIndex(x + i, y + j)] = color;
+				}
+			}
+		} else {
+			leds[calculateLedIndex(x, y)] = color;
+		}
 	}
 }
 
@@ -130,17 +154,28 @@ void RGBLed::processIncomingByteLookup(byte incomingByte) {
 void RGBLed::processIncomingByteFrame(byte incomingByte) {
 	buffer[bytesReceived++] = incomingByte;
 
-	int expectingBytes = numLeds * pixelFormatMultiplier * colorDepth / 8;
+	// base led number
+	int expectingBytes = numLeds;
+
+	// mono or rgb
+	expectingBytes *= pixelFormatMultiplier;
+
+	// ratio based on bitpacking
+	expectingBytes *= colorDepth;
+	expectingBytes /= 8;
+
+	// scaling down the expectation
+	expectingBytes /= pow(inputScale, 2);
 
 	if (bytesReceived == expectingBytes) {
 		int unpackedValues[numLeds * pixelFormatMultiplier];
 		unpack_values(buffer, unpackedValues, bytesReceived, colorDepth);
 
-		for (int row = 0; row < matrixHeight; row++) {
-			for (int col = 0; col < matrixWidth; col++) {
+		for (int row = 0; row < matrixHeightScaled; row++) {
+			for (int col = 0; col < matrixWidthScaled; col++) {
 				int max_value = (1 << colorDepth) - 1;
 
-				int idx = ( row * matrixWidth + col ) * pixelFormatMultiplier;
+				int idx = ( row * matrixWidthScaled + col ) * pixelFormatMultiplier;
 
 				if (pixelFormat == PIXEL_FORMAT_RGB) {
 					int r = unpackedValues[idx] * 255 / max_value;
