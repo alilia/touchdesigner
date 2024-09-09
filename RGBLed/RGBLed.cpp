@@ -43,7 +43,7 @@ void RGBLed::setColorDepth(int colorDepthCustom) {
 }
 
 void RGBLed::setInputScale(int inputScaleCustom) {
-	if (!inputScaleCustom) inputScaleCustom = 0.5;
+	if (inputScaleCustom < 1) inputScaleCustom = 1;
 
 	inputScale = inputScaleCustom;
 }

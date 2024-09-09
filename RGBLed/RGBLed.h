@@ -58,7 +58,7 @@ private:
 	void setPixel(int x, int y, CRGB color);
 	void update();
 
-	float inputScale;
+	int inputScale;
 	int colorDepth;
 
 	PixelFormat pixelFormat;
