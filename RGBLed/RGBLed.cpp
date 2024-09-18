@@ -1,12 +1,14 @@
 #include "RGBLed.h"
 
 RGBLed::RGBLed()
-	:
-		bytesReceived(0),
-		receivingDataType(RECEIVING_NONE),
-		inputScale(1),
-		pixelFormatMultiplier(3)
 	{
+		setPixelFormat(PIXEL_FORMAT_RGB);
+		setFlipAxis(FLIP_AXIS_NONE);
+		setInputScale(1);
+		setColorDepth(8);
+
+		resetState();
+
 		// filling table for debug
 		for (int i = 0; i<256; i++) {
 			lookupTable[i] = CRGB(i, 0, 0);
@@ -32,7 +34,7 @@ void RGBLed::setResolution(int matrixWidthCustom, int matrixHeightCustom) {
 }
 
 void RGBLed::setPixelFormat(PixelFormat pixelFormatCustom) {
-	pixelFormat = pixelFormatCustom; // bitpacking
+	pixelFormat = pixelFormatCustom;
 
 	if (pixelFormat == PIXEL_FORMAT_RGB) pixelFormatMultiplier = 3;
 	else if (pixelFormat == PIXEL_FORMAT_MONO) pixelFormatMultiplier = 1;
@@ -48,9 +50,11 @@ void RGBLed::setInputScale(int inputScaleCustom) {
 	inputScale = inputScaleCustom;
 }
 
-void RGBLed::begin() {
-	randomSeed(analogRead(0));
+void RGBLed::setFlipAxis(FlipAxisTypes flipAxisCustom) {
+	flipAxis = flipAxisCustom;
+}
 
+void RGBLed::begin() {
 	if (outputDataPin == 0) { FastLED.addLeds<WS2812B, DATA_PIN_00, GRB>(leds, numLeds); }
 	else if (outputDataPin == 1) { FastLED.addLeds<WS2812B, DATA_PIN_01, GRB>(leds, numLeds); }
 	else if (outputDataPin == 2) { FastLED.addLeds<WS2812B, DATA_PIN_02, GRB>(leds, numLeds); }
@@ -68,6 +72,7 @@ void RGBLed::begin() {
 
 	FastLED.setBrightness(255);
 
+	randomSeed(analogRead(0));
 	fill_solid(leds, numLeds, CRGB(random(32), random(32), random(32)));
 
 	update();
@@ -78,6 +83,11 @@ int RGBLed::calculateLedIndex(int x, int y) {
 }
 
 void RGBLed::setPixel(int x, int y, CRGB color) {
+	x = flipAxis == 2 ? matrixWidthScaled - 1 - x : x;
+	y = flipAxis == 1 ? matrixWidthScaled - 1 - y : y;
+	int scaleDirectionX = flipAxis == 2 ? -1 : 1;
+	int scaleDirectionY = flipAxis == 1 ? -1 : 1;
+
 	if (x >= 0 && x < matrixWidthScaled && y >= 0 && y < matrixHeightScaled) {
 		if (inputScale > 1) {
 			x *= inputScale;
@@ -85,7 +95,7 @@ void RGBLed::setPixel(int x, int y, CRGB color) {
 
 			for (int i = 0; i < inputScale; i++) {
 				for (int j = 0; j < inputScale; j++) {
-					leds[calculateLedIndex(x + i, y + j)] = color;
+					leds[calculateLedIndex(x + i * scaleDirectionX, y + j * scaleDirectionY)] = color;
 				}
 			}
 		} else {

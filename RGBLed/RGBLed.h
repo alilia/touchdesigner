@@ -25,12 +25,15 @@ public:
 	RGBLed();
 	~RGBLed();
 
-	enum PixelFormat {PIXEL_FORMAT_RGB, PIXEL_FORMAT_MONO};
+	enum PixelFormat { PIXEL_FORMAT_RGB, PIXEL_FORMAT_MONO };
+	enum FlipAxisTypes { FLIP_AXIS_NONE, FLIP_AXIS_X, FLIP_AXIS_Y } ;
 
 	void setResolution(int matrixWidthCustom, int matrixHeightCustom);
 	void setPixelFormat(PixelFormat pixelFormatCustom);
 	void setColorDepth(int colorDepthCustom);
+
 	void setInputScale(int inputScaleCustom);
+	void setFlipAxis(FlipAxisTypes flipAxisCustom);
 
 	int calculateLedIndex(int x, int y);
 
@@ -60,6 +63,7 @@ private:
 
 	int inputScale;
 	int colorDepth;
+	FlipAxisTypes flipAxis;
 
 	PixelFormat pixelFormat;
 	int pixelFormatMultiplier;

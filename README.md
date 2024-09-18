@@ -48,6 +48,10 @@ Implementation is based on [FastLED](https://github.com/FastLED/FastLED).
   * `PIXEL_FORMAT_RGB`: 8-bit int per each of RGB channels is extracted
   * `PIXEL_FORMAT_MONO`: 8-bit int is extracted from R channel
 * `setInputScale`: upscale ratio for the incoming data (in case of `2`, applies 8x8 data to a 16x16 matrix)
+* `setFlipAxis`: changes the order of how the matrix is filled
+  * `FLIP_AXIS_NONE`: default, no manipulation happens
+  * `FLIP_AXIS_X`: flips the matrix vertically
+  * `FLIP_AXIS_Y`: flips the matrix horizontally
 
 ### Touchdesigner component custom parameters
 
