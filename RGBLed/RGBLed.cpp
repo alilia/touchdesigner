@@ -1,17 +1,21 @@
 #include "RGBLed.h"
 
-RGBLed::RGBLed(RGBLedController& controllerCustom, int index)
-	: controller(controllerCustom), buffer(nullptr), lookupTable(), bytesReceived(0), receivingDataType(RECEIVING_NONE), matrixIndex(index) {
-	setPixelFormat(PIXEL_FORMAT_RGB);
-	setFlipAxis(FLIP_AXIS_NONE);
-	setInputScale(1);
-	setColorDepth(8);
-	resetState();
+RGBLed::RGBLed(RGBLedController& controllerCustom)
+	:
+		controller(controllerCustom),
+		buffer(nullptr)
+	{
+		setPixelFormat(PIXEL_FORMAT_RGB);
+		setFlipAxis(FLIP_AXIS_NONE);
+		setInputScale(1);
+		setColorDepth(8);
 
-	for (int i = 0; i < 256; i++) {
-		lookupTable[i] = CRGB(i, 0, 0);
+		resetState();
+
+		for (int i = 0; i < 256; i++) {
+			lookupTable[i] = CRGB(i, 0, 0);
+		}
 	}
-}
 
 RGBLed::~RGBLed() {
 	delete[] buffer;
@@ -21,7 +25,11 @@ void RGBLed::setResolution(int matrixWidthCustom, int matrixHeightCustom) {
 	matrixWidth = matrixWidthCustom;
 	matrixHeight = matrixHeightCustom;
 
-	buffer = new byte[getNumLeds() * 3]; // even if mono, lookup is rgb
+	buffer = new byte[(matrixWidth / inputScale) * (matrixHeight / inputScale) * 3]; // even if mono, lookup is rgb
+
+	matrixWidthScaled = matrixWidth / inputScale;
+	matrixHeightScaled = matrixHeight / inputScale;
+
 	controller.attachMatrix(this);
 }
 
@@ -50,6 +58,14 @@ void RGBLed::setFlipAxis(FlipAxisTypes flipAxisCustom) {
 
 void RGBLed::begin() {
 	controller.begin();
+}
+
+void RGBLed::setPixel(int col, int row, int matrixWidth, int matrixHeight, int startIdx, CRGB color) {
+	controller.getLedArray()[
+		controller.calculateLedIndex(
+			col, row, matrixWidth, matrixHeight, startIdx
+		)
+	] = color;
 }
 
 void RGBLed::receiveSerialData(byte incomingByte) {
@@ -88,7 +104,7 @@ void RGBLed::receiveSerialData(byte incomingByte) {
 void RGBLed::processIncomingByteLookup(byte incomingByte) {
 	buffer[bytesReceived++] = incomingByte;
 
-	int expectingBytes = 256 * 3;
+	int expectingBytes = (matrixWidthScaled * matrixHeightScaled) * pixelFormatMultiplier * colorDepth / 8;
 
 	if (bytesReceived == expectingBytes) {
 		for (int i = 0; i < 256; i++) {
@@ -109,7 +125,7 @@ void RGBLed::processIncomingByteFrame(byte incomingByte) {
 	buffer[bytesReceived++] = incomingByte;
 
 	// base led number
-	int expectingBytes = numLeds;
+	int expectingBytes = getNumLeds();
 
 	// mono or rgb
 	expectingBytes *= pixelFormatMultiplier;
@@ -137,17 +153,31 @@ void RGBLed::processIncomingByteFrame(byte incomingByte) {
 					int g = unpackedValues[idx + 1] * 255 / max_value;
 					int b = unpackedValues[idx + 2] * 255 / max_value;
 
-					controller.getLedArray()[controller.calculateLedIndex(col, row, matrixWidth, matrixHeight, startIdx)] = CRGB(r, g, b);
+					for (int i = 0; i < inputScale; i++) {
+						for (int j = 0; j < inputScale; j++) {
+							int x = col * inputScale + i;
+							int y = row * inputScale + j;
+
+							setPixel(x, y, matrixWidth, matrixHeight, startIdx, CRGB(r, g, b));
+						}
+					}
 				} else if (pixelFormat == PIXEL_FORMAT_MONO) {
 					int m = unpackedValues[idx] * 255 / max_value;
 
-					controller.getLedArray()[controller.calculateLedIndex(col, row, matrixWidth, matrixHeight, startIdx)] = lookupTable[m];
+					for (int i = 0; i < inputScale; i++) {
+						for (int j = 0; j < inputScale; j++) {
+							int x = col * inputScale + i;
+							int y = row * inputScale + j;
+
+							setPixel(x, y, matrixWidth, matrixHeight, startIdx, lookupTable[m]);
+						}
+					}
 				}
 			}
-		}
 
-		controller.update();
-		resetState();
+			controller.update();
+			resetState();
+		}
 	}
 }
 

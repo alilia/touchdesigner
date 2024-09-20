@@ -7,7 +7,7 @@
 
 class RGBLed : public TDComm {
 public:
-	RGBLed(RGBLedController& controller, int index);
+	RGBLed(RGBLedController& controller);
 	~RGBLed();
 
 	enum PixelFormat { PIXEL_FORMAT_RGB, PIXEL_FORMAT_MONO };
@@ -29,10 +29,19 @@ private:
 	void processIncomingByteFrame(byte incomingByte);
 	void processIncomingByteLookup(byte incomingByte);
 	void unpack_values(byte* buffer, int* values, int length, int bitsPerValue);
-	virtual void resetState() override;
 
 	int matrixWidth;
 	int matrixHeight;
+	int matrixWidthScaled;
+	int matrixHeightScaled;
+
+	enum ReceivingDataType { RECEIVING_NONE, RECEIVING_FRAME, RECEIVING_LOOKUP } receivingDataType;
+	virtual void resetState() override;
+
+	void setPixel(int col, int row, int matrixWidth, int matrixHeight, int startIdx, CRGB color);
+
+	byte* buffer;
+
 	int inputScale;
 	int colorDepth;
 	FlipAxisTypes flipAxis;
@@ -40,13 +49,10 @@ private:
 	PixelFormat pixelFormat;
 	int pixelFormatMultiplier;
 
-	enum ReceivingDataType { RECEIVING_NONE, RECEIVING_FRAME, RECEIVING_LOOKUP } receivingDataType;
-	int bytesReceived;
 	CRGB lookupTable[256];
-	byte* buffer;
 
+	int bytesReceived;
 	RGBLedController& controller;
-	int matrixIndex;
 };
 
 #endif // RGBLED_H

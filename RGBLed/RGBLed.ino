@@ -5,8 +5,8 @@
 RGBLedController controller;
 
 // Create instances of RGBLed
-RGBLed matrix1(controller, 0);
-RGBLed matrix2(controller, 1);
+RGBLed matrix1(controller);
+RGBLed matrix2(controller);
 
 void setup() {
 	Serial.begin(115200);
