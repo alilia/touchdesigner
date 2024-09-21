@@ -9,6 +9,11 @@ RGBLedController::RGBLedController()
 	{}
 
 RGBLedController::~RGBLedController() {
+	for (int i = 0; i < ledMatricesSize; ++i) {
+		delete ledMatrices[i];
+	}
+
+	delete[] ledMatrices;
 	delete[] leds;
 }
 
@@ -47,7 +52,9 @@ void RGBLedController::begin() {
 void RGBLedController::updateTotalLength() {
 	numLeds = 0;
 
-	for (RGBLed* matrix : ledMatrices) {
+	for (int i = 0; i < ledMatricesSize; ++i) {
+		RGBLed* matrix = ledMatrices[i];
+
 		numLeds += matrix->getNumLeds();
 	}
 
@@ -57,8 +64,29 @@ void RGBLedController::updateTotalLength() {
 	initDataPin();
 }
 
+void RGBLedController::addLedMatrix(RGBLed* ledMatrix) {
+	if (ledMatricesSize >= ledMatricesCapacity) {
+		// Resize the array (double the capacity)
+		int newCapacity = (ledMatricesCapacity == 0) ? 1 : ledMatricesCapacity * 2;
+		RGBLed** newLedMatrices = new RGBLed*[newCapacity];
+
+		// Copy the existing elements to the new array
+		for (int i = 0; i < ledMatricesSize; ++i) {
+			newLedMatrices[i] = ledMatrices[i];
+		}
+
+		// Delete the old array and replace it with the new one
+		delete[] ledMatrices;
+		ledMatrices = newLedMatrices;
+		ledMatricesCapacity = newCapacity;
+	}
+
+	// Add the new element
+	ledMatrices[ledMatricesSize++] = ledMatrix;
+}
+
 void RGBLedController::attachMatrix(RGBLed* ledMatrix) {
-	ledMatrices.push_back(ledMatrix);
+	addLedMatrix(ledMatrix);
 
 	updateTotalLength();
 }
@@ -80,8 +108,11 @@ int RGBLedController::calculateLedIndex(int x, int y, int matrixWidth, int matri
 int RGBLedController::getStartIndexForMatrix(RGBLed* matrix) {
 	int startIndex = 0;
 
-	for (RGBLed* mat : ledMatrices) {
+	for (int i = 0; i < ledMatricesSize; ++i) {
+		RGBLed* mat = ledMatrices[i];
+
 		if (mat == matrix) break;
+
 		startIndex += mat->getNumLeds();
 	}
 

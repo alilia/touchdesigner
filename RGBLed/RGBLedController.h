@@ -2,7 +2,6 @@
 #define RGBLEDCONTROLLER_H
 
 #include <FastLED.h>
-#include <vector>
 
 // "dynamic" data pin hack (digital pins for arduino r4 wifi)
 #define DATA_PIN_00 0
@@ -32,13 +31,18 @@ public:
 	void begin();
 	void update();
 
+	void addLedMatrix(RGBLed* ledMatrix);
+
 	void attachMatrix(RGBLed* ledMatrix);
 	CRGB* getLedArray();
 	int calculateLedIndex(int x, int y, int matrixWidth, int matrixHeight, int startIdx);
 	int getStartIndexForMatrix(RGBLed* matrix);
 
 private:
-	std::vector<RGBLed*> ledMatrices; // introduced by chatgpt
+	RGBLed** ledMatrices = nullptr;   // Pointer to the array of RGBLed pointers
+	int ledMatricesSize = 0;          // Number of elements currently in the array
+	int ledMatricesCapacity = 0;      // The allocated size of the array
+
 	int numLeds;
 	int dataPin;
 
