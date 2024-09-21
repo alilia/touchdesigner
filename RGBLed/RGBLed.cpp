@@ -174,10 +174,10 @@ void RGBLed::processIncomingByteFrame(byte incomingByte) {
 					}
 				}
 			}
-
-			controller.update();
-			resetState();
 		}
+
+		controller.update();
+		resetState();
 	}
 }
 
