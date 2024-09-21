@@ -12,7 +12,7 @@ RGBLed::RGBLed(RGBLedController& controllerCustom)
 
 		resetState();
 
-		for (int i = 0; i < 256; i++) {
+		for (int i = 0; i<256; i++) {
 			lookupTable[i] = CRGB(i, 0, 0);
 		}
 	}
@@ -108,10 +108,10 @@ void RGBLed::receiveSerialData(byte incomingByte) {
 void RGBLed::processIncomingByteLookup(byte incomingByte) {
 	buffer[bytesReceived++] = incomingByte;
 
-	int expectingBytes = (matrixWidthScaled * matrixHeightScaled) * pixelFormatMultiplier * colorDepth / 8;
+	int expectingBytes = 256 * 3;
 
 	if (bytesReceived == expectingBytes) {
-		for (int i = 0; i < 256; i++) {
+		for (int i = 0; i<256; i++) {
 			int idx = i * 3;
 
 			int r = buffer[idx];
@@ -152,7 +152,7 @@ void RGBLed::processIncomingByteFrame(byte incomingByte) {
 		for (int row = 0; row < matrixHeightScaled; row++) {
 			for (int col = 0; col < matrixWidthScaled; col++) {
 				int max_value = (1 << colorDepth) - 1;
-				int idx = (row * matrixWidthScaled + col) * pixelFormatMultiplier;
+				int idx = ( row * matrixWidthScaled + col ) * pixelFormatMultiplier;
 
 				if (pixelFormat == PIXEL_FORMAT_RGB) {
 					int r = unpackedValues[idx] * 255 / max_value;
