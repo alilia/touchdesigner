@@ -138,38 +138,42 @@ void RGBLed::processIncomingByteFrame(byte incomingByte) {
 	expectingBytes /= pow(inputScale, 2);
 
 	if (bytesReceived == expectingBytes) {
-		int unpackedValues[getNumLeds() * pixelFormatMultiplier];
+		int numUnpackedValues = matrixWidthScaled * matrixHeightScaled * pixelFormatMultiplier;
+		int unpackedValues[numUnpackedValues];
+
 		unpack_values(buffer, unpackedValues, bytesReceived, colorDepth);
 
 		int startIdx = controller.getStartIndexForMatrix(this);
 
-		for (int row = 0; row < matrixHeight; row++) {
-			for (int col = 0; col < matrixWidth; col++) {
+		for (int row = 0; row < matrixHeightScaled; row++) {
+			for (int col = 0; col < matrixWidthScaled; col++) {
 				int max_value = (1 << colorDepth) - 1;
-				int idx = (row * matrixWidth + col) * pixelFormatMultiplier;
+				int idx = (row * matrixWidthScaled + col) * pixelFormatMultiplier;
 
 				if (pixelFormat == PIXEL_FORMAT_RGB) {
 					int r = unpackedValues[idx] * 255 / max_value;
 					int g = unpackedValues[idx + 1] * 255 / max_value;
 					int b = unpackedValues[idx + 2] * 255 / max_value;
 
+					CRGB color = CRGB(r, g, b);
 					for (int i = 0; i < inputScale; i++) {
 						for (int j = 0; j < inputScale; j++) {
 							int x = col * inputScale + i;
 							int y = row * inputScale + j;
 
-							setPixel(x, y, matrixWidth, matrixHeight, startIdx, CRGB(r, g, b));
+							setPixel(x, y, matrixWidth, matrixHeight, startIdx, color);
 						}
 					}
 				} else if (pixelFormat == PIXEL_FORMAT_MONO) {
 					int m = unpackedValues[idx] * 255 / max_value;
 
+					CRGB color = lookupTable[m];
 					for (int i = 0; i < inputScale; i++) {
 						for (int j = 0; j < inputScale; j++) {
 							int x = col * inputScale + i;
 							int y = row * inputScale + j;
 
-							setPixel(x, y, matrixWidth, matrixHeight, startIdx, lookupTable[m]);
+							setPixel(x, y, matrixWidth, matrixHeight, startIdx, color);
 						}
 					}
 				}
