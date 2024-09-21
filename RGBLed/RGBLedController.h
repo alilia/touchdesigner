@@ -38,7 +38,7 @@ public:
 	int getStartIndexForMatrix(RGBLed* matrix);
 
 private:
-	std::vector<RGBLed*> ledMatrices;
+	std::vector<RGBLed*> ledMatrices; // introduced by chatgpt
 	int numLeds;
 	int dataPin;
 

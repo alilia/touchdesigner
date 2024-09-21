@@ -78,6 +78,7 @@ void RGBLed::receiveSerialData(byte incomingByte) {
 				bytesReceived = 0;
 				lastMiliSec = millis();
 			}
+
 			break;
 
 		case RECEIVING_DATA:
@@ -86,14 +87,17 @@ void RGBLed::receiveSerialData(byte incomingByte) {
 					if (incomingByte == 0xFF) receivingDataType = RECEIVING_FRAME;
 					else if (incomingByte == 0xFE) receivingDataType = RECEIVING_LOOKUP;
 					else resetState();
+
 					break;
 
 				case RECEIVING_FRAME:
 					processIncomingByteFrame(incomingByte);
+
 					break;
 
 				case RECEIVING_LOOKUP:
 					processIncomingByteLookup(incomingByte);
+
 					break;
 			}
 
@@ -156,6 +160,7 @@ void RGBLed::processIncomingByteFrame(byte incomingByte) {
 					int b = unpackedValues[idx + 2] * 255 / max_value;
 
 					CRGB color = CRGB(r, g, b);
+
 					for (int i = 0; i < inputScale; i++) {
 						for (int j = 0; j < inputScale; j++) {
 							int x = col * inputScale + i;
@@ -168,6 +173,7 @@ void RGBLed::processIncomingByteFrame(byte incomingByte) {
 					int m = unpackedValues[idx] * 255 / max_value;
 
 					CRGB color = lookupTable[m];
+
 					for (int i = 0; i < inputScale; i++) {
 						for (int j = 0; j < inputScale; j++) {
 							int x = col * inputScale + i;

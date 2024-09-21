@@ -2,7 +2,11 @@
 #include "RGBLed.h"
 
 RGBLedController::RGBLedController()
-	: dataPin(-1), numLeds(0), leds(nullptr) {}
+	:
+		dataPin(-1),
+		numLeds(0),
+		leds(nullptr)
+	{}
 
 RGBLedController::~RGBLedController() {
 	delete[] leds;
@@ -42,16 +46,20 @@ void RGBLedController::begin() {
 
 void RGBLedController::updateTotalLength() {
 	numLeds = 0;
+
 	for (RGBLed* matrix : ledMatrices) {
 		numLeds += matrix->getNumLeds();
 	}
+
 	delete[] leds;
 	leds = new CRGB[numLeds];
+
 	initDataPin();
 }
 
 void RGBLedController::attachMatrix(RGBLed* ledMatrix) {
 	ledMatrices.push_back(ledMatrix);
+
 	updateTotalLength();
 }
 
@@ -65,14 +73,17 @@ CRGB* RGBLedController::getLedArray() {
 
 int RGBLedController::calculateLedIndex(int x, int y, int matrixWidth, int matrixHeight, int startIdx) {
 	int index = startIdx + ((y % 2 == 0) ? (y * matrixWidth + x) : (y * matrixWidth + (matrixWidth - 1 - x)));
+
 	return index;
 }
 
 int RGBLedController::getStartIndexForMatrix(RGBLed* matrix) {
 	int startIndex = 0;
+
 	for (RGBLed* mat : ledMatrices) {
 		if (mat == matrix) break;
 		startIndex += mat->getNumLeds();
 	}
+
 	return startIndex;
 }
