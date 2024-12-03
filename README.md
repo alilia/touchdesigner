@@ -72,3 +72,15 @@ However, when accelerating the fan from a static position, only hard blows were 
 ### Touchdesigner component custom parameters
 
 * `Basespeed` : 12V cooling fan has a base speed powered by Arduino's 5V, which can vary. Therefore, base speed is set, speed above what value should be published to the serial by Arduino
+
+## gradients
+
+Collection of gradients found around the Internet. Backlog:
+
+* name custom parameters
+* integrate with the infamous [Colour Lover Palette Picker](https://derivative.ca/community-post/asset/colour-lover-palette-picker/62697)
+
+### Included gradients
+
+* [Multitones: Deep & Rich Collection](https://attitudecreative.co.uk/multitones-deep-and-rich) by Attitude Creative
+* [Jerry-Lee Bosmans](https://www.jerryleebosmans.com/)
