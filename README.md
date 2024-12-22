@@ -84,4 +84,4 @@ Collection of gradients found around the Internet. Backlog:
 
 * [Multitones: Deep & Rich Collection](https://attitudecreative.co.uk/multitones-deep-and-rich) by Attitude Creative
 * [Jerry-Lee Bosmans](https://www.jerryleebosmans.com/)
-* damonxart
+* [Hsieh chen lin](https://damonxart.com/)
