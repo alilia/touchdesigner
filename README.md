@@ -79,6 +79,7 @@ Collection of gradients found around the Internet. Backlog:
 
 * name custom parameters
 * integrate with the infamous [Colour Lover Palette Picker](https://derivative.ca/community-post/asset/colour-lover-palette-picker/62697)
+* make gradients non-binary (so VCS can track changes)
 
 ### Included gradients
 
