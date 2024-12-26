@@ -77,12 +77,19 @@ However, when accelerating the fan from a static position, only hard blows were 
 
 Collection of gradients found around the Internet. Backlog:
 
-* name custom parameters
-* integrate with the infamous [Colour Lover Palette Picker](https://derivative.ca/community-post/asset/colour-lover-palette-picker/62697)
-* make gradients non-binary (so VCS can track changes)
+[ ] name custom parameters
+[ ]  integrate with the infamous [Colour Lover Palette Picker](https://derivative.ca/community-post/asset/colour-lover-palette-picker/62697)
+[ ] make gradients non-binary (so VCS can track changes)
 
 ### Included gradients
 
 * [Multitones: Deep & Rich Collection](https://attitudecreative.co.uk/multitones-deep-and-rich) by Attitude Creative
 * [Jerry-Lee Bosmans](https://www.jerryleebosmans.com/)
 * [Hsieh chen lin](https://damonxart.com/)
+
+## particle_flow
+
+Component to capture particles' movement based on the input TOP's edges. Backlog:
+
+[ ] color map
+[ ] size map
